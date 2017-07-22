@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">SeatimeWear</string>
+    <string name="hello_world">Hello World!</string>
+    <string name="title_activity_network">NetworkActivity</string>
+
+    <string name="network">Network Connected</string>
+    <string name="network_disconnected">Disconnected</string>
+    <string name="network_connecting">Connecting</string>
+
+    <string name="data_pair">Pair</string>
+
+    <string name="info_request_network">0000</string>
+    <string name="info_release_network">Network is now available</string>
+    <string name="info_add_wifi">No network is available. You must add a Wi-Fi network to continue</string>
+
+    <string name="button_request_network">Request Network</string>
+    <string name="button_release_network">Release Network</string>
+    <string name="button_add_wifi">Add Wi-Fi Network</string>
+    <string name="title_activity_spot">SpotActivity</string>
+    <string name="hello_round">Hello Round World!</string>
+    <string name="hello_square">Hello Square World!</string>
+</resources>

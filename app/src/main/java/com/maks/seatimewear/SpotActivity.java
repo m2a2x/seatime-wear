@@ -1,55 +1,86 @@
 package com.maks.seatimewear;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.wearable.activity.WearableActivity;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 
+import com.maks.seatimewear.components.SpotMainPageFragment;
+import com.maks.seatimewear.components.SpotTidePageFragment;
 import com.maks.seatimewear.datasource.UserDS;
 import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Tide;
 
 import java.util.ArrayList;
 
-public class SpotActivity extends WearableActivity {
-    private Spot currentSpot;
-
+public class SpotActivity extends FragmentActivity {
+    long id;
+    private PagerAdapter mPagerAdapter;
+    private ViewPager mPager;
 
     // DataSource
     private UserDS dataSource;
-
-    private TextView mSpotText;
-    private ArrayAdapter mListAdapter;
-    private ListView mListView;
+    private Spot currentSpot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        id = this.getIntent().getExtras().getLong("id");
         final Context currentContext = this;
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spot);
-        long id = this.getIntent().getExtras().getLong("id");
 
-        dataSource = new UserDS(this);
-        dataSource.open();
-        currentSpot = dataSource.findSpotById(id);
+        dataSource = new UserDS(currentContext);
 
-        ArrayList<Tide> tides = dataSource.getTidesBySpot(id);
-        dataSource.close();
+        // Instantiate a ViewPager and a PagerAdapter.
+        mPager = (ViewPager) findViewById(R.id.pager);
+        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+    }
 
-        mSpotText = (TextView) findViewById(R.id.spot_text);
-        mSpotText.setText(currentSpot.getValue());
+    @Override
+    public void onBackPressed() {
+        if (mPager.getCurrentItem() == 0) {
+            // If the user is currently looking at the first step, allow the system to handle the
+            // Back button. This calls finish() on this activity and pops the back stack.
+            super.onBackPressed();
+        } else {
+            // Otherwise, select the previous step.
+            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
+        }
+    }
 
-        mListView = (ListView) findViewById(R.id.listview);
 
-        mListAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
-        mListAdapter.addAll(tides);
-        mListView.setAdapter(mListAdapter);
+    /**
+     * A simple pager adapter that represents 5  objects, in
+     * sequence.
+     */
+    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
+        @Override
+        public Fragment getItem(int position) {
+            switch(position) {
+                case 0: return SpotMainPageFragment.newInstance(position);
+                case 1: {
+                    dataSource.open();
+                    currentSpot = dataSource.findSpotById(id);
+                    ArrayList<Tide> tides = dataSource.getTidesTodayBySpot(id);
+                    dataSource.close();
+                    return SpotTidePageFragment.newInstance(position, tides, currentSpot);
+                }
+                default: return SpotMainPageFragment.newInstance(position);
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
     }
 }

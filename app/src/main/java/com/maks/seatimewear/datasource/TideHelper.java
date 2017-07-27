@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Tide;
 import com.maks.seatimewear.sql.SeaSQLiteHelper;
+import com.maks.seatimewear.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -29,10 +30,16 @@ public class TideHelper {
         database = db;
     }
 
-    public ArrayList<Tide> getBySpot(long spot_id) {
+    public ArrayList<Tide> getBySpot(long spot_id, long time) {
+
         ArrayList<Tide> items = new ArrayList();
 
         String where =  SeaSQLiteHelper.COLUMN_SPOT_ID + "=" + spot_id;
+        where += " AND " + SeaSQLiteHelper.COLUMN_TIME + ">=" + Utils.currentTimeUnix();
+        if (time != 0) {
+            where += " AND " + SeaSQLiteHelper.COLUMN_TIME + "<=" + time;
+        }
+
         Cursor cursor = database.query(TABLE, null, where, null, null, null, null, null);
 
         cursor.moveToFirst();
@@ -44,6 +51,10 @@ public class TideHelper {
         // make sure to close the cursor
         cursor.close();
         return items;
+    }
+
+    public ArrayList<Tide> getBySpot(long spot_id) {
+        return this.getBySpot(spot_id, 0);
     }
 
     public void createItems(ArrayList<Tide> items) {

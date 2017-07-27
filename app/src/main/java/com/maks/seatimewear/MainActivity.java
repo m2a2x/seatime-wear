@@ -1,5 +1,4 @@
 package com.maks.seatimewear;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,12 +14,6 @@ import com.maks.seatimewear.datasource.UserDS;
 import com.maks.seatimewear.model.Spot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-// import java.text.SimpleDateFormat;
-// import java.util.Date;
-// import java.util.Locale;
 
 public class MainActivity extends WearableActivity {
 
@@ -41,7 +34,9 @@ public class MainActivity extends WearableActivity {
     protected void onCreate(Bundle savedInstanceState) {
         final Context currentContext = this;
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
         setAmbientEnabled();
         dataSource = new UserDS(this);
         mContainerView = (BoxInsetLayout) findViewById(R.id.container);

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import com.maks.seatimewear.SpotData.*;
 
 public class NetworkActivity extends WearableActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -127,6 +128,8 @@ public class NetworkActivity extends WearableActivity {
         mInfoText = (TextView) findViewById(R.id.info_text);
         mSmallInfoText = (TextView) findViewById(R.id.smallinfo_text);
 
+
+
         mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         mHandler = new Handler() {
@@ -141,6 +144,8 @@ public class NetworkActivity extends WearableActivity {
                 }
             }
         };
+
+        this.dataMapping(SpotData.GetJson());
     }
 
 
@@ -382,7 +387,7 @@ public class NetworkActivity extends WearableActivity {
     }
 
     private void pair()  {
-        String url = "https://seatime.herokuapp.com/api/pair";
+        String url = "https://seatime.herokuapp.com/apiDevice/pair";
         JSONObject jsonBody = new JSONObject();
 
         try {

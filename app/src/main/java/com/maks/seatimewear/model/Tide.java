@@ -5,6 +5,8 @@ import android.database.Cursor;
 
 import com.maks.seatimewear.sql.SeaSQLiteHelper;
 
+import java.io.Serializable;
+
 import static com.maks.seatimewear.utils.Utils.timestampToTime;
 
 /**
@@ -12,7 +14,7 @@ import static com.maks.seatimewear.utils.Utils.timestampToTime;
  * [_id, spot_id, state, shift, timestamp]
  */
 
-public class Tide {
+public class Tide implements Serializable {
     private String _id;
     private long spot_id;
     private String state;
@@ -66,6 +68,7 @@ public class Tide {
 
     public void setTimestamp(long v) {
         timestamp = v;
+        setTime(timestampToTime(timestamp));
     }
 
     public void update(Cursor cursor) {
@@ -74,7 +77,6 @@ public class Tide {
         setState(cursor.getString(2));
         setShift(cursor.getString(3));
         setTimestamp(cursor.getInt(4));
-        setTime(timestampToTime(timestamp));
     }
 
     public void putContentValues(ContentValues values) {

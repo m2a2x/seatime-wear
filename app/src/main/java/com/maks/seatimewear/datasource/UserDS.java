@@ -7,6 +7,7 @@ import com.maks.seatimewear.model.Option;
 import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Tide;
 import com.maks.seatimewear.sql.SeaSQLiteHelper;
+import com.maks.seatimewear.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -59,6 +60,11 @@ public class UserDS {
 
     public ArrayList<Tide> getTidesBySpot(long id) {
         return tideHelper.getBySpot(id);
+    }
+
+
+    public ArrayList<Tide> getTidesTodayBySpot(long id) {
+        return tideHelper.getBySpot(id, Utils.getEndOfDayUnix());
     }
 
     public void close() {

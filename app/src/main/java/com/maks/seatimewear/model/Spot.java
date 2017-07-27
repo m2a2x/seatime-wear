@@ -7,6 +7,7 @@ package com.maks.seatimewear.model;
 public class Spot {
     private long _id;
     private String name;
+
     public long getId() {
         return _id;
     }

@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="30dp"
         android:paddingBottom="10dp"
-        android:text="@string/info_request_network"
+        android:text="Spot Name"
         android:textAlignment="center"
         android:textSize="@dimen/text_medium"/>
 
@@ -20,15 +20,9 @@
         android:layout_width="match_parent"
         android:layout_height="113dp"
         android:layout_marginTop="80dp"
-        android:background="#ccc"
-        android:paddingBottom="40dp"
-        android:paddingLeft="0dp"
-        app:exampleColor="#33b5e5"
-        app:exampleDimension="24sp"/>
-<!--
-    <ListView
-        android:id="@+id/listview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
--->
+        app:textColor="#B6B6B6"
+        app:textSize="10sp"
+        app:lineSize="2dp"
+        app:labelHeight="18dp"
+        app:lineColor="#949A9F"/>
 </FrameLayout>

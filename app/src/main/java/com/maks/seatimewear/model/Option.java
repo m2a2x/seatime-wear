@@ -1,10 +1,29 @@
 package com.maks.seatimewear.model;
 
+import java.io.Serializable;
+import com.j256.ormlite.table.DatabaseTable;
+import com.j256.ormlite.field.DatabaseField;
 
-public class Option {
+
+@DatabaseTable
+public class Option implements Serializable {
+    @DatabaseField(generatedId = true)
     private long id;
+
+    @DatabaseField
     private String option;
+
+    @DatabaseField
     private String key;
+
+    public Option() {
+
+    }
+
+    public Option(String _key, String _option) {
+        setValue(_option);
+        setKey(_key);
+    }
 
     public long getId() {
         return id;

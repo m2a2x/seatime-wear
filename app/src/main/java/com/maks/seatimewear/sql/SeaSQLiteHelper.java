@@ -17,7 +17,13 @@ public class SeaSQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_OPTION = "option";
     public static final String COLUMN_NAME = "name";
 
-
+    public static final String COLUMN_SPEED = "speed";
+    public static final String COLUMN_COMPASS = "compass";
+    public static final String COLUMN_MIN_HEIGHT = "min_height";
+    public static final String COLUMN_MAX_HEIGHT = "max_height";
+    public static final String COLUMN_PERIOD = "period";
+    public static final String COLUMN_POWER = "power";
+    public static final String COLUMN_UNIT = "unit";
 
     /*
      * UserOptions
@@ -43,15 +49,38 @@ public class SeaSQLiteHelper extends SQLiteOpenHelper {
                     + COLUMN_NAME + " text not null);";
 
     /*
-    * Condition
+    * Swell
+    * [_id, spot_id, compass, max_height, min_height, period, power, time, unit]
+    * */
+    public static final String TABLE_SWELL = "Swells";
+
+    private static final String TABLE_SWELL_CREATE =
+            "create table " + TABLE_SWELL + "( "
+                    + COLUMN_ID + " text primary key, "
+                    + COLUMN_SPOT_ID + " integer not null, "
+                    + COLUMN_COMPASS + " text not null, "
+                    + COLUMN_MAX_HEIGHT + " integer not null, "
+                    + COLUMN_MIN_HEIGHT + " integer not null, "
+                    + COLUMN_PERIOD + " integer not null, "
+                    + COLUMN_POWER + " integer not null, "
+                    + COLUMN_TIME + " integer not null, "
+                    + COLUMN_UNIT + " text not null);";
+
+
+    /*
+    * Wind
     * [_id, spot_id]
     * */
-    public static final String TABLE_CONDITION = "Conditions";
+    public static final String TABLE_WIND = "Winds";
 
-    private static final String TABLE_CONDITION_CREATE =
-            "create table " + TABLE_CONDITION + "( "
+    private static final String TABLE_WIND_CREATE =
+            "create table " + TABLE_WIND + "( "
                     + COLUMN_ID + " text primary key, "
-                    + COLUMN_SPOT_ID + " integer not null);";
+                    + COLUMN_SPOT_ID + " integer not null, "
+                    + COLUMN_COMPASS + " text not null, "
+                    + COLUMN_SPEED + " integer not null, "
+                    + COLUMN_TIME + " integer not null, "
+                    + COLUMN_UNIT + " text not null);";
 
 
     /*
@@ -85,8 +114,9 @@ public class SeaSQLiteHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase database) {
         database.execSQL(TABLE_USEROPTIONS_CREATE);
         database.execSQL(TABLE_SPOTS_CREATE);
-        database.execSQL(TABLE_CONDITION_CREATE);
+        database.execSQL(TABLE_SWELL_CREATE);
         database.execSQL(TABLE_TIDE_CREATE);
+        database.execSQL(TABLE_WIND_CREATE);
     }
 
     @Override
@@ -96,9 +126,9 @@ public class SeaSQLiteHelper extends SQLiteOpenHelper {
                         + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USEROPTIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SPOTS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONDITION);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SWELL);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_WIND);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TIDE);
         onCreate(db);
     }
-
 }

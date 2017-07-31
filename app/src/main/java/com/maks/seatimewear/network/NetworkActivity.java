@@ -1,6 +1,5 @@
-package com.maks.seatimewear;
+package com.maks.seatimewear.network;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -8,33 +7,16 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.maks.seatimewear.datasource.UserDS;
-import com.maks.seatimewear.model.Spot;
-import com.maks.seatimewear.model.Tide;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.UUID;
+import com.maks.seatimewear.MainActivity;
+import com.maks.seatimewear.R;
 import java.util.concurrent.TimeUnit;
-import com.maks.seatimewear.SpotData.*;
+
 
 public class NetworkActivity extends WearableActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -51,13 +33,10 @@ public class NetworkActivity extends WearableActivity {
     private static final long NETWORK_CONNECTIVITY_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(10);
     private static final long NETWORK_REQUEST_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(5);
     private ConnectivityManager mConnectivityManager;
+    private Handler mHandler;
     private ConnectivityManager.NetworkCallback mNetworkCallback;
 
-    // Handler for dealing with network connection timeouts.
-    private Handler mHandler;
 
-    // DataSource
-    private UserDS dataSource;
 
     private ImageView mConnectivityIcon;
     private TextView mConnectivityText;
@@ -68,8 +47,7 @@ public class NetworkActivity extends WearableActivity {
     private TextView mInfoText;
     private TextView mSmallInfoText;
     private View mProgressBar;
-    private String UUIDKey;
-    private Map<String, String> preferenses;
+
 
     // Tags added to the button in the UI to detect what operation the user has requested.
     // These are required since the app reuses the button for different states of the app/UI.
@@ -78,8 +56,6 @@ public class NetworkActivity extends WearableActivity {
     static final String TAG_RELEASE_NETWORK = "RELEASE_NETWORK";
     static final String TAG_ADD_WIFI = "ADD_WIFI";
 
-
-    public String STATUS_PAIRED = "PAIRED";
 
 
     // These constants are used by setUiState() to determine what information to display in the UI,
@@ -93,27 +69,11 @@ public class NetworkActivity extends WearableActivity {
     static final int UI_STATE_PAIR = 6;
 
 
-    //runs without a timer by reposting this handler at the end of the runnable
-    Handler timerHandler = new Handler();
-    Runnable timerRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            pair();
-        }
-    };
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        dataSource = new UserDS(this);
-        dataSource.open();
-
         setContentView(R.layout.activity_network);
 
-        fillOptions(dataSource.getAllOptions());
 
         mConnectivityIcon = (ImageView) findViewById(R.id.connectivity_icon);
         mConnectivityText = (TextView) findViewById(R.id.connectivity_text);
@@ -130,8 +90,8 @@ public class NetworkActivity extends WearableActivity {
 
 
 
+        /*
         mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
         mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -143,46 +103,30 @@ public class NetworkActivity extends WearableActivity {
                         break;
                 }
             }
-        };
-
-        this.dataMapping(SpotData.GetJson());
-    }
-
-
-    private void fillOptions(Map<String, String> pref) {
-        preferenses = pref;
-        UUIDKey = pref.get("uuid");
-
-        if (UUIDKey == null || UUIDKey.isEmpty()) {
-            UUIDKey = UUID.randomUUID().toString();
-            dataSource.createOption("uuid", UUIDKey);
-        }
+        }; */
     }
 
 
     @Override
     public void onStop() {
-        releaseHighBandwidthNetwork();
+        // releaseHighBandwidthNetwork();
         super.onStop();
     }
 
     @Override
     protected void onPause() {
-        dataSource.close();
-        timerHandler.removeCallbacks(timerRunnable);
         super.onPause();
     }
 
     @Override
     public void onResume() {
-        dataSource.open();
         super.onResume();
-
+        /*
         if (isNetwork()) {
             setUiState(UI_STATE_NETWORK_CONNECTED);
         } else {
             setUiState(UI_STATE_REQUEST_NETWORK);
-        }
+        } */
     }
 
     private void unregisterNetworkCallback() {
@@ -316,7 +260,7 @@ public class NetworkActivity extends WearableActivity {
         mConnectivityIcon.setVisibility(View.VISIBLE);
         mInfoText.setVisibility(View.GONE);
         mSmallInfoText.setVisibility(View.GONE);
-        timerHandler.removeCallbacks(timerRunnable);
+        // timerHandler.removeCallbacks(timerRunnable);
 
         switch (uiState) {
             case UI_STATE_REQUEST_NETWORK:
@@ -347,9 +291,11 @@ public class NetworkActivity extends WearableActivity {
                 mConnectivityText.setText(R.string.data_pair);
 
                 mProgressBar.setVisibility(View.GONE);
+                // mInfoText.setText(pairNumber);
                 mInfoText.setVisibility(View.VISIBLE);
                 mButton.setVisibility(View.GONE);
-                timerHandler.postDelayed(timerRunnable, 1000);
+
+                // timerHandler.postDelayed(timerRunnable, 1000);
 
                 break;
 
@@ -365,7 +311,7 @@ public class NetworkActivity extends WearableActivity {
                 mButtonText.setText(R.string.button_release_network);
 
                 setUiState(UI_STATE_REQUESTING_DATA);
-                timerHandler.postDelayed(timerRunnable, 0);
+                // timerHandler.postDelayed(timerRunnable, 0);
 
                 break;
 
@@ -383,71 +329,6 @@ public class NetworkActivity extends WearableActivity {
                 mSmallInfoText.setText(R.string.info_add_wifi);
 
                 break;
-        }
-    }
-
-    private void pair()  {
-        String url = "https://seatime.herokuapp.com/apiDevice/pair";
-        JSONObject jsonBody = new JSONObject();
-
-        try {
-            jsonBody.put("uuid", UUIDKey);
-            jsonBody.put("device", "mission");
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest (
-            Request.Method.POST,
-            url,
-            jsonBody,
-            this.pairResponse(),
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError e) {
-                    e.printStackTrace();
-                }
-            }
-        );
-
-        // Access the RequestQueue through singleton class.
-        Api.getInstance(this).addToRequestQueue(jsObjRequest);
-    }
-
-    private Response.Listener<JSONObject> pairResponse() {
-        return new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                String pairNumber = response.optString("Pair");
-                if (pairNumber.isEmpty()) {
-                    if (preferenses.get("status") != STATUS_PAIRED) {
-                        dataSource.createOption("status", STATUS_PAIRED);
-                    }
-                    timerHandler.removeCallbacks(timerRunnable);
-                    dataMapping(response);
-                    finish();
-                    return;
-                }
-                setUiState(UI_STATE_PAIR);
-                mInfoText.setText(pairNumber);
-            }
-        };
-    }
-
-    private void dataMapping(JSONObject response) {
-        if (response != null) {
-            JSONObject data = response.optJSONObject("PairedData");
-
-            JSONArray dataSpot = data.optJSONArray("spots");
-            Type listSpotType = new TypeToken<ArrayList<Spot>>() {}.getType();
-            ArrayList<Spot> spots = new Gson().fromJson(dataSpot.toString(), listSpotType);
-            dataSource.createSpots(spots);
-
-            JSONArray dataTide = data.optJSONArray("tides");
-            Type listTideType = new TypeToken<ArrayList<Tide>>() {}.getType();
-            ArrayList<Tide> tides = new Gson().fromJson(dataTide.toString(), listTideType);
-            dataSource.createTides(tides);
         }
     }
 }

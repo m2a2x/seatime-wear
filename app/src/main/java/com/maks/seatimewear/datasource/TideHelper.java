@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Tide;
 import com.maks.seatimewear.sql.SeaSQLiteHelper;
 import com.maks.seatimewear.utils.Utils;
@@ -63,7 +62,7 @@ public class TideHelper {
         try {
             ContentValues values = new ContentValues();
             for (Tide item: items) {
-                item.putContentValues(values);
+                //item.putContentValues(values);
                 database.insert(TABLE, null, values);
             }
             database.setTransactionSuccessful();
@@ -74,7 +73,7 @@ public class TideHelper {
 
     private Tide cursorToTide(Cursor cursor) {
         Tide item = new Tide();
-        item.update(cursor);
+        //item.update(cursor);
         return item;
     }
 }

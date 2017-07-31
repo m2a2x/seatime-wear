@@ -23,28 +23,13 @@ import java.util.ArrayList;
 public class SpotTidePageFragment extends Fragment {
     private static final String ARG_PAGE = "Page";
     private static final String ARG_TIDES = "Tides";
-    private int mPageNumber;
-    private long spotId;
-    private TideChart mTc;
+    int mPageNumber;
+    TideChart mTc;
     private ArrayList<Tide> mTides;
 
 
-    private TextView mSpotText;
-    private ArrayAdapter mListAdapter;
-    private ListView mListView;
+    public SpotTidePageFragment() {}
 
-
-    public SpotTidePageFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param page Page number.
-     * @return A new instance of fragment SpotMainPageFragment.
-     */
     public static SpotTidePageFragment newInstance(int page, ArrayList<Tide> tides, Spot spot) {
         SpotTidePageFragment fragment = new SpotTidePageFragment();
 
@@ -69,26 +54,10 @@ public class SpotTidePageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout containing a title and body text.
-        ViewGroup rootView = (ViewGroup) inflater
-                .inflate(R.layout.fragment_spot_tide_page, container, false);
-        // mListView = (ListView) rootView.findViewById(R.id.listview);
-
-        // mListAdapter = new ArrayAdapter(rootView.getContext(), android.R.layout.simple_list_item_1);
-       //  mSpotText = (TextView) rootView.findViewById(R.id.spot_text);
-
-
-
-
-        // mSpotText.setText(currentSpot.getValue());
-
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_spot_tide_page, container, false);
         this.mTc = (TideChart) rootView.findViewById(R.id.TideChart);
         this.mTc.setTides(mTides);
 
-        // mListAdapter.addAll(mTides);
-        // mListView.setAdapter(mListAdapter);
-
-        // Inflate the layout for this fragment
         return rootView;
     }
 }

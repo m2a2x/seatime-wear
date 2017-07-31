@@ -21,44 +21,60 @@ public class TideChart extends View {
 
     private TextPaint mTextPaint;
 
+    float mLineSize = 1.0f;
+    float mDimensionLineSize = 0.0f;
+    float mTextSize = 5.0f;
+    float mTextHeight = 5.0f;
+
+    int mChartHeight = 40;
+
+    int mLineColor = Color.WHITE;
+    int mTextColor = Color.WHITE;
+    int mDimensionLineColor = Color.TRANSPARENT;
+
+    boolean mHasTideDescription = false;
+
     public TideChart(Context context) {
         super(context);
-        init(null, 0);
+        init(null);
     }
 
     public TideChart(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(attrs, 0);
+        init(attrs);
     }
 
-    public TideChart(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        init(attrs, defStyle);
-    }
-
-    private void init(AttributeSet attrs, int defStyle) {
+    private void init(AttributeSet attrs) {
         // Load attributes
 
         final TypedArray a = getContext().obtainStyledAttributes(
-                attrs, R.styleable.TideChart, defStyle, 0);
-        a.recycle();
+                attrs, R.styleable.TideChart, 0, 0);
 
         // Set up a default TextPaint object
         mTextPaint = new TextPaint();
         mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
-        mTextPaint.setTextAlign(Paint.Align.LEFT);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
 
-        // Update TextPaint and text measurements from attributes
-        invalidateTextPaintAndMeasurements();
-    }
 
-    private void invalidateTextPaintAndMeasurements() {
-        /*mTextPaint.setTextSize(mExampleDimension);
-        mTextPaint.setColor(mExampleColor);
-        mTextWidth = mTextPaint.measureText(mExampleString);
+        try {
+            // Retrieve the values from the TypedArray and store into
 
-        Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
-        mTextHeight = fontMetrics.bottom; */
+            mTextSize = a.getDimension(R.styleable.TideChart_textSize, mTextSize);
+            mDimensionLineSize = a.getDimension(R.styleable.TideChart_dimensionSize, mDimensionLineSize);
+            mLineSize = a.getDimension(R.styleable.TideChart_lineSize, mLineSize);
+            mTextHeight = a.getDimension(R.styleable.TideChart_labelHeight, mTextHeight);
+
+            mLineColor = a.getColor(R.styleable.TideChart_lineColor, mLineColor);
+            mDimensionLineColor = a.getColor(R.styleable.TideChart_dimensionLineColor, mDimensionLineColor);
+            mTextColor = a.getColor(R.styleable.TideChart_textColor, mTextColor);
+            mHasTideDescription = a.getBoolean(R.styleable.TideChart_tideDescription, mHasTideDescription);
+        } finally {
+            // release the TypedArray so that it can be reused.
+            a.recycle();
+        }
+
+        mTextPaint.setTextSize(mTextSize);
+        mTextPaint.setColor(mTextColor);
     }
 
     private boolean isFirstLow() {
@@ -101,35 +117,35 @@ public class TideChart extends View {
 
 
 
-        Path wave = drawCurve(contentWidth, this.mTides.size(), this.isFirstLow(), 10);
-        Path lines = drawDemensions(contentWidth, this.mTides.size(), 10);
+        Path wave = drawCurve(contentWidth, this.mTides.size(), this.isFirstLow(), mTextHeight, mChartHeight);
+        Path lines = drawDimensions(contentWidth, this.mTides.size(), mTextHeight, mChartHeight);
 
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setStrokeWidth(2.0f);
-        paint.setColor(Color.BLACK);
+        paint.setStrokeWidth(mLineSize);
+        paint.setColor(mLineColor);
 
         c.drawPath(wave, paint);
 
-        paint.setStrokeWidth(1.0f);
+        // Dimension
+        paint.setColor(mDimensionLineColor);
+        paint.setStrokeWidth(mDimensionLineSize);
         c.drawPath(lines, paint);
 
-        mTextPaint.setTextSize(12);
-        mTextPaint.setColor(Color.BLACK);
-        this.drawTime(c, contentWidth, this.mTides.size(), this.mTides, mTextPaint);
-        this.drawTide(c, contentWidth, this.mTides.size(), this.mTides, mTextPaint);
+        this.drawTime(c, contentWidth, this.mTides.size(), this.mTides, mTextPaint, mChartHeight);
+        if (mHasTideDescription) {
+            this.drawTide(c, contentWidth, this.mTides.size(), this.mTides, mTextPaint, mChartHeight);
+        }
     }
-    private Path drawCurve(int w, int pikes, boolean startLow, int paddingTop) {
+    private Path drawCurve(int w, int pikes, boolean startLow, float paddingTop, int y) {
         Path graph = new Path();
         int i = 0;
         boolean low = startLow;
 
         int x = Math.round(w / pikes / 2);
         int x2 = 2 * x;
-
-        int y = 40;
 
         graph.moveTo(0, y / 2 + paddingTop);
 
@@ -142,11 +158,10 @@ public class TideChart extends View {
         return graph;
     }
 
-    private Path drawDemensions(int w, int pikes, int paddingTop) {
+    private Path drawDimensions(int w, int pikes, float paddingTop, int y) {
         Path line = new Path();
         int i = 0;
         int x = Math.round(w / pikes);
-        int y = 40;
 
         while (i < pikes) {
             line.moveTo(x * i + x / 2, paddingTop);
@@ -157,7 +172,7 @@ public class TideChart extends View {
         return line;
     }
 
-    private void drawTime(Canvas c, int w, int pikes, ArrayList<Tide> tides, Paint p) {
+    private void drawTime(Canvas c, int w, int pikes, ArrayList<Tide> tides, Paint p, int y) {
         int i = 0;
         int x = Math.round(w / pikes);
 
@@ -168,10 +183,9 @@ public class TideChart extends View {
         }
     }
 
-    private void drawTide(Canvas c, int w, int pikes, ArrayList<Tide> tides, Paint p) {
+    private void drawTide(Canvas c, int w, int pikes, ArrayList<Tide> tides, Paint p, int y) {
         int i = 0;
         int x = Math.round(w / pikes);
-        int y = 40;
 
         while (i < pikes) {
             Tide tide = tides.get(i);
@@ -188,6 +202,5 @@ public class TideChart extends View {
      */
     public void setTides(ArrayList<Tide> tides) {
         mTides = tides;
-        // invalidateTextPaintAndMeasurements();
     }
 }

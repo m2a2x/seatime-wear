@@ -1,0 +1,20 @@
+<resources>
+    <declare-styleable name="PagerCountView">
+        <attr name="radius" format="dimension" />
+        <attr name="selectedColor" format="color" />
+        <attr name="inactiveColor" format="color" />
+        <attr name="pageCount" format="integer" />
+        <attr name="pageStart" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="TideChart">
+        <attr name="textSize" format="dimension" />
+        <attr name="lineSize" format="dimension" />
+        <attr name="dimensionSize" format="dimension" />
+        <attr name="labelHeight" format="dimension" />
+        <attr name="tideDescription" format="boolean" />
+        <attr name="textColor" format="color" />
+        <attr name="lineColor" format="color" />
+        <attr name="dimensionLineColor" format="color" />
+    </declare-styleable>
+</resources>

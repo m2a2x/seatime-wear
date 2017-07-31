@@ -1,9 +1,7 @@
 package com.maks.seatimewear.model;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-
-import com.maks.seatimewear.sql.SeaSQLiteHelper;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 
@@ -13,30 +11,40 @@ import static com.maks.seatimewear.utils.Utils.timestampToTime;
  * Created by maks on 08/07/2017.
  * [_id, spot_id, state, shift, timestamp]
  */
-
+@DatabaseTable
 public class Tide implements Serializable {
-    private String _id;
-    private long spot_id;
+    public static final String SPOT_ID = "spot_id";
+    public static final String TIMESTAMP = "timestamp";
+
+    @DatabaseField(generatedId = true)
+    private long id;
+
+    @DatabaseField(canBeNull = false, columnName = SPOT_ID, foreign = true)
+    private Spot spot;
+
+    @DatabaseField
     private String state;
+
+    @DatabaseField
     private String shift;
-    private String time;
+
+    @DatabaseField(columnName = TIMESTAMP)
     private long timestamp;
 
-    public String getId() {
-        return _id;
+
+    public long getId() {
+        return id;
     }
 
-    public void setId(String v) {
-        _id = v;
+    public void setId(long v) {
+        id = v;
     }
 
-    public long getSpot_id() {
-        return spot_id;
+
+    public void setSpot(Spot _spot) {
+        spot = _spot;
     }
 
-    public void setSpot_id(long v) {
-        spot_id = v;
-    }
 
     public String getState() {
         return state;
@@ -46,50 +54,27 @@ public class Tide implements Serializable {
         state = v;
     }
 
-    public String getShift() {
-        return shift;
-    }
-
     public void setShift(String v) {
         shift = v;
     }
 
     public String getTime() {
-        return time;
+        return timestampToTime(timestamp);
     }
 
-    public void setTime(String v) {
-        time = v;
+
+    public void setTimestamp(long v) {
+        timestamp = v;
     }
 
     public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long v) {
-        timestamp = v;
-        setTime(timestampToTime(timestamp));
-    }
-
-    public void update(Cursor cursor) {
-        setId(cursor.getString(0));
-        setSpot_id(cursor.getInt(1));
-        setState(cursor.getString(2));
-        setShift(cursor.getString(3));
-        setTimestamp(cursor.getInt(4));
-    }
-
-    public void putContentValues(ContentValues values) {
-        values.put(SeaSQLiteHelper.COLUMN_ID, _id);
-        values.put(SeaSQLiteHelper.COLUMN_SPOT_ID, spot_id);
-        values.put(SeaSQLiteHelper.COLUMN_STATE, state);
-        values.put(SeaSQLiteHelper.COLUMN_SHIFT, shift);
-        values.put(SeaSQLiteHelper.COLUMN_TIME, timestamp);
-    }
 
     // Will be used by the ArrayAdapter in the ListView
     @Override
     public String toString() {
-        return state + ' ' + time;
+        return state + ' ' + getTime();
     }
 }

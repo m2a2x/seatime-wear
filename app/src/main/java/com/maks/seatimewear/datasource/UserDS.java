@@ -67,6 +67,14 @@ public class UserDS {
         return tideHelper.getBySpot(id, Utils.getEndOfDayUnix());
     }
 
+    public boolean isSynced() {
+        return false;
+    }
+
+    public boolean isDeprecatedGlobal() {
+        return true;
+    }
+
     public void close() {
         dbHelper.close();
     }

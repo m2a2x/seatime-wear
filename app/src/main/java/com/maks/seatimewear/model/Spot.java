@@ -1,11 +1,14 @@
 package com.maks.seatimewear.model;
 
-/**
- * Created by maks on 07/07/2017.
- */
+import com.j256.ormlite.table.DatabaseTable;
+import com.j256.ormlite.field.DatabaseField;
 
+@DatabaseTable
 public class Spot {
+    @DatabaseField(id = true)
     private long _id;
+
+    @DatabaseField
     private String name;
 
     public long getId() {

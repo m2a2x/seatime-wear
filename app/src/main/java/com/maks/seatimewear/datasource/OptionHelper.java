@@ -51,7 +51,7 @@ public class OptionHelper {
     }
 
     private Option cursorToOption(Cursor cursor) {
-        Option option = new Option();
+        Option option = new Option("k", "c");
         option.setId(cursor.getInt(0));
         option.setKey(cursor.getString(1));
         option.setValue(cursor.getString(2));

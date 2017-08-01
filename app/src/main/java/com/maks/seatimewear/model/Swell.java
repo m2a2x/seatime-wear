@@ -1,70 +1,65 @@
 package com.maks.seatimewear.model;
 
-import android.content.ContentValues;
-import android.database.Cursor;
 
-import com.maks.seatimewear.sql.SeaSQLiteHelper;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.maks.seatimewear.model.i.forecastI;
 
-import java.io.Serializable;
-
-import static com.maks.seatimewear.utils.Utils.timestampToTime;
+import static com.maks.seatimewear.sql.DatabaseHelper.SPOT_ID;
+import static com.maks.seatimewear.sql.DatabaseHelper.TIMESTAMP;
 
 /**
  * Created by maks on 08/07/2017.
  * [_id, spot_id, state, shift, timestamp]
  */
+@DatabaseTable
+public class Swell implements forecastI {
 
-public class Swell {
-    private String _id;
-    private long spot_id;
-    private String compassDirection;
-    private long minHeight;
-    private long maxHeight;
-    private long period;
-    private long power;
+    @DatabaseField(generatedId = true)
+    private long id;
+
+
+    @DatabaseField(canBeNull = false, columnName = SPOT_ID, foreign = true)
+    private Spot spot;
+
+    @DatabaseField(columnName = TIMESTAMP)
     private long timestamp;
+
+    @DatabaseField
+    private String compassDirection;
+
+    @DatabaseField
+    private long height;
+
+    @DatabaseField
+    private long period;
+
+    @DatabaseField
+    private long power;
+
+    @DatabaseField
     private String unit;
 
     public Swell() {}
 
-    public String getId() {
-        return _id;
+    public long getId() {
+        return id;
     }
 
-    public void setId(String v) {
-        _id = v;
+    public void setId(long v) {
+        id = v;
     }
 
 
-    public void setSpot_id(long v) {
-        spot_id = v;
-    }
-
-    public void setCompassDirection(String v) {
-        compassDirection = v;
-    }
-
-    public void setUnit(String v) {
-        unit = v;
-    }
-
-    public void setPeriod(long v) {
-        period = v;
-    }
-
-    public void setPower(long v) {
-        power = v;
-    }
-
-    public void setMinHeight(long v) {
-        minHeight = v;
-    }
-
-    public void setMaxHeight(long v) {
-        maxHeight = v;
+    public void setSpot(Spot v) {
+        spot = v;
     }
 
     public void setTimestamp(long v) {
         timestamp = v;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 }

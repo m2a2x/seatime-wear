@@ -12,35 +12,35 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import com.maks.seatimewear.model.Condition;
 import com.maks.seatimewear.model.Option;
 import com.maks.seatimewear.model.Spot;
+import com.maks.seatimewear.model.Swell;
 import com.maks.seatimewear.model.Tide;
+import com.maks.seatimewear.model.Wind;
 
 /**
  * Database helper which creates and upgrades the database and provides the DAOs for the app.
- *
- * @author kevingalligan
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
-
-    /************************************************
-     * Suggested Copy/Paste code. Everything from here to the done block.
-     ************************************************/
-
     private static final String DATABASE_NAME = "seatime.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 6;
+
+
+    public static final String TIMESTAMP = "timestamp";
+    public static final String SPOT_ID = "spot_id";
 
     private Dao<Option, Integer> optionDao;
     private Dao<Spot, Integer> spotDao;
     private Dao<Tide, Integer> tideDao;
+    private Dao<Swell, Integer> swellDao;
+    private Dao<Condition, Integer> conditionDao;
+    private Dao<Wind, Integer> windDao;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    /************************************************
-     * Suggested Copy/Paste Done
-     ************************************************/
 
     @Override
     public void onCreate(SQLiteDatabase sqliteDatabase, ConnectionSource connectionSource) {
@@ -48,6 +48,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, Option.class);
             TableUtils.createTable(connectionSource, Spot.class);
             TableUtils.createTable(connectionSource, Tide.class);
+            TableUtils.createTable(connectionSource, Swell.class);
+            TableUtils.createTable(connectionSource, Condition.class);
+            TableUtils.createTable(connectionSource, Wind.class);
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Unable to create datbases", e);
         }
@@ -59,6 +62,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, Option.class, true);
             TableUtils.dropTable(connectionSource, Spot.class, true);
             TableUtils.dropTable(connectionSource, Tide.class, true);
+            TableUtils.dropTable(connectionSource, Swell.class, true);
+            TableUtils.dropTable(connectionSource, Condition.class, true);
+            TableUtils.dropTable(connectionSource, Wind.class, true);
             onCreate(sqliteDatabase, connectionSource);
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Unable to upgrade database from version " + oldVer + " to new "
@@ -95,5 +101,26 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             tideDao = getDao(Tide.class);
         }
         return tideDao;
+    }
+
+    public Dao<Swell, Integer> getSwellDao() throws SQLException {
+        if (swellDao == null) {
+            swellDao = getDao(Swell.class);
+        }
+        return swellDao;
+    }
+
+    public Dao<Condition, Integer> getConditionDao() throws SQLException {
+        if (conditionDao == null) {
+            conditionDao = getDao(Condition.class);
+        }
+        return conditionDao;
+    }
+
+    public Dao<Wind, Integer> getWindDao() throws SQLException {
+        if (windDao == null) {
+            windDao = getDao(Wind.class);
+        }
+        return windDao;
     }
 }

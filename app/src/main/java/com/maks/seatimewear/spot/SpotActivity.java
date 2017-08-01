@@ -1,21 +1,21 @@
-package com.maks.seatimewear;
+package com.maks.seatimewear.spot;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.maks.seatimewear.R;
 import com.maks.seatimewear.components.PagerCountView;
-import com.maks.seatimewear.components.SpotMainPageFragment;
-import com.maks.seatimewear.components.SpotTidePageFragment;
+import com.maks.seatimewear.model.Condition;
 import com.maks.seatimewear.model.Spot;
+import com.maks.seatimewear.model.Swell;
 import com.maks.seatimewear.model.Tide;
+import com.maks.seatimewear.model.Wind;
+import com.maks.seatimewear.model.i.forecastI;
 import com.maks.seatimewear.network.PairConditionFragment;
 import com.maks.seatimewear.sql.DatabaseHelper;
 import com.maks.seatimewear.utils.Utils;
@@ -23,19 +23,19 @@ import com.maks.seatimewear.utils.Utils;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class SpotActivity extends FragmentActivity implements PairConditionFragment.OnPairConditionListener {
-    static final int SWELL_PAGE = 0;
-    static final int TIDE_PAGE = 1;
+import static com.maks.seatimewear.sql.DatabaseHelper.SPOT_ID;
+import static com.maks.seatimewear.sql.DatabaseHelper.TIMESTAMP;
+
+public class SpotActivity extends FragmentActivity
+        implements PairConditionFragment.OnPairConditionListener, SpotScreenAdapter.TodayTidesCallback {
 
     private DatabaseHelper databaseHelper = null;
-    int id;
+    private int id;
     private PagerAdapter mPagerAdapter;
     private PagerCountView mPagerCountView;
     private ViewPager mPager;
 
     private Spot currentSpot;
-
-    /*TODO: Update selected page according async data from server*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +67,7 @@ public class SpotActivity extends FragmentActivity implements PairConditionFragm
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerCountView = (PagerCountView) findViewById(R.id.pagerCount);
         mPagerCountView.setPage(1);
-        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPagerAdapter = new SpotScreenAdapter(getSupportFragmentManager(), currentSpot, this);
         mPager.setAdapter(mPagerAdapter);
 
         mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -105,55 +105,6 @@ public class SpotActivity extends FragmentActivity implements PairConditionFragm
         }
     }
 
-    public void onSpotDataUpdated(ArrayList<PairConditionFragment.ForecastItem> forecasts,
-                                  ArrayList<PairConditionFragment.ConditionItem> conditions) {
-
-        try {
-            Dao<Tide, Integer> dao = getHelper().getTideDao();
-            for (PairConditionFragment.ConditionItem c: conditions) {
-                for (Tide tide : c.tide) {
-                    tide.setSpot(currentSpot);
-                    Tide t = getTideByTimestamp(tide.getTimestamp());
-                    if (t != null) {
-                        dao.update(t);
-                    } else {
-                        dao.create(tide);
-                    }
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    /**
-     * A simple pager adapter that represents N objects, in
-     * sequence.
-     */
-    private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case SWELL_PAGE: return SpotMainPageFragment.newInstance(position);
-                case TIDE_PAGE: {
-                    return SpotTidePageFragment.newInstance(position, getTodayTides(), currentSpot);
-                }
-                default: return SpotMainPageFragment.newInstance(position);
-            }
-
-        }
-
-        @Override
-        public int getCount() {
-            return 2;
-        }
-    }
 
     private DatabaseHelper getHelper() {
         if (databaseHelper == null) {
@@ -162,7 +113,49 @@ public class SpotActivity extends FragmentActivity implements PairConditionFragm
         return databaseHelper;
     }
 
-    private ArrayList<Tide> getTodayTides() {
+
+    public void onSpotDataUpdated(ArrayList<PairConditionFragment.ForecastItem> forecasts,
+                                  ArrayList<PairConditionFragment.ConditionItem> conditions) {
+        try {
+            Dao<Tide, Integer> daoTide = getHelper().getTideDao();
+            Dao<Swell, Integer> daoSwell= getHelper().getSwellDao();
+            Dao<Wind, Integer> daoWind = getHelper().getWindDao();
+            Dao<Condition, Integer> daoCondition= getHelper().getConditionDao();
+
+            for (PairConditionFragment.ConditionItem c: conditions) {
+                for (Tide tide : c.tide) {
+                    tide.setSpot(currentSpot);
+                    daoUpdate(daoTide, tide);
+                }
+            }
+
+            for (PairConditionFragment.ForecastItem f: forecasts) {
+                f.swell.setSpot(currentSpot);
+                f.swell.setTimestamp(f.timestamp);
+
+                daoUpdate(daoSwell, f.swell);
+
+
+                f.wind.setSpot(currentSpot);
+                f.wind.setTimestamp(f.timestamp);
+
+                daoUpdate(daoWind, f.wind);
+
+                f.condition.setSpot(currentSpot);
+                f.condition.setTimestamp(f.timestamp);
+
+                daoUpdate(daoCondition, f.condition);
+            }
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        mPager.setAdapter(mPagerAdapter);
+    }
+
+    public ArrayList<Tide> getTodayTides() {
         ArrayList<Tide> tides;
         try {
             QueryBuilder<Tide, Integer> queryBuilder =
@@ -170,9 +163,9 @@ public class SpotActivity extends FragmentActivity implements PairConditionFragm
 
 
             queryBuilder.where()
-                    .eq(Tide.SPOT_ID, id)
+                    .eq(SPOT_ID, id)
                     .and()
-                    .between(Tide.TIMESTAMP, Utils.currentTimeUnix(), Utils.getEndOfDayUnix());
+                    .between(TIMESTAMP, Utils.currentTimeUnix(), Utils.getEndOfDayUnix());
 
 
             tides = new ArrayList<>(queryBuilder.query());
@@ -182,20 +175,33 @@ public class SpotActivity extends FragmentActivity implements PairConditionFragm
         return tides;
     }
 
-    private Tide getTideByTimestamp (long timestamp) throws SQLException {
-        ArrayList<Tide> tides;
-        QueryBuilder<Tide, Integer> queryBuilder =
-                getHelper().getTideDao().queryBuilder();
+    private <T extends forecastI> void
+        daoUpdate(Dao<T, Integer> dao, T sItem)
+            throws SQLException  {
+        T dbItem = getByTimestamp(
+                sItem.getTimestamp(),
+                dao.queryBuilder()
+        );
+
+        if (dbItem != null) {
+            dao.update(dbItem);
+        } else {
+            dao.create(sItem);
+        }
+    }
+
+    private <T>T getByTimestamp (long timestamp, QueryBuilder<T, Integer> queryBuilder) throws SQLException {
+        ArrayList<T> items;
 
 
         queryBuilder.where()
-                .eq(Tide.SPOT_ID, id)
+                .eq("spot_id", id)
                 .and()
-                .eq(Tide.TIMESTAMP, timestamp);
+                .eq("timestamp", timestamp);
 
-        tides = new ArrayList<>(queryBuilder.query());
-        if (tides.size() > 0) {
-            return tides.get(0);
+        items = new ArrayList<>(queryBuilder.query());
+        if (items.size() > 0) {
+            return items.get(0);
         }
         return null;
     }

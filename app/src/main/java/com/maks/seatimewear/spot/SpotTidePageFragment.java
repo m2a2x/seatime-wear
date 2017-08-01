@@ -1,19 +1,19 @@
-package com.maks.seatimewear.components;
+package com.maks.seatimewear.spot;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.maks.seatimewear.R;
+import com.maks.seatimewear.components.TideChart;
 import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Tide;
 
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,9 +23,14 @@ import java.util.ArrayList;
 public class SpotTidePageFragment extends Fragment {
     private static final String ARG_PAGE = "Page";
     private static final String ARG_TIDES = "Tides";
+    private static final String ARG_SPOT = "Spot";
+
+    private ArrayList<Tide> mTides;
+    private Spot mSpot;
     int mPageNumber;
     TideChart mTc;
-    private ArrayList<Tide> mTides;
+
+    TextView mName;
 
 
     public SpotTidePageFragment() {}
@@ -36,17 +41,20 @@ public class SpotTidePageFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
         args.putSerializable(ARG_TIDES, tides);
+        args.putSerializable(ARG_SPOT, spot);
 
         fragment.setArguments(args);
         return fragment;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mPageNumber = getArguments().getInt(ARG_PAGE);
             mTides = (ArrayList<Tide>) getArguments().getSerializable(ARG_TIDES);
+            mSpot = (Spot) getArguments().getSerializable(ARG_SPOT);
         }
     }
 
@@ -57,6 +65,9 @@ public class SpotTidePageFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_spot_tide_page, container, false);
         this.mTc = (TideChart) rootView.findViewById(R.id.TideChart);
         this.mTc.setTides(mTides);
+
+        mName = (TextView) rootView.findViewById(R.id.spot_name);
+        mName.setText(mSpot.getValue());
 
         return rootView;
     }

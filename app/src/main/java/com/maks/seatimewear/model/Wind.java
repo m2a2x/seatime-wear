@@ -1,55 +1,49 @@
 package com.maks.seatimewear.model;
 
-import android.content.ContentValues;
-import android.database.Cursor;
 
-import com.maks.seatimewear.sql.SeaSQLiteHelper;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+import com.maks.seatimewear.model.i.forecastI;
 
-import java.io.Serializable;
-
-import static com.maks.seatimewear.utils.Utils.timestampToTime;
+import static com.maks.seatimewear.sql.DatabaseHelper.SPOT_ID;
+import static com.maks.seatimewear.sql.DatabaseHelper.TIMESTAMP;
 
 /**
  * Created by maks on 08/07/2017.
  * [_id, spot_id, state, shift, timestamp]
  */
+@DatabaseTable
+public class Wind implements forecastI {
+    @DatabaseField(generatedId = true)
+    private long id;
 
-public class Wind {
-    private String _id;
-    private long spot_id;
+    @DatabaseField(canBeNull = false, columnName = SPOT_ID, foreign = true)
+    private Spot spot;
+
+    @DatabaseField
     private String compass;
+
+    @DatabaseField
     private long speed;
+
+    @DatabaseField(columnName = TIMESTAMP)
     private long timestamp;
+
+    @DatabaseField
     private String unit;
 
-    public String getId() {
-        return _id;
+    public Wind() { }
+
+
+    public void setSpot(Spot v) {
+        spot = v;
     }
-
-    public void setId(String v) {
-        _id = v;
-    }
-
-    public void setSpot_id(long v) {
-        spot_id = v;
-    }
-
-
-    public void setCompass(String v) {
-        compass = v;
-    }
-
-    public void setSpeed(long v) {
-        speed = v;
-    }
-
-
-    public void setUnit(String v) {
-        unit = v;
-    }
-
 
     public void setTimestamp(long v) {
         timestamp = v;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 }

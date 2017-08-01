@@ -2,10 +2,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.maks.seatimewear.components.SpotMainPageFragment">
+    tools:context="com.maks.seatimewear.spot.SpotMainPageFragment">
 
     <TextView
-        android:id="@+id/spot_text"
+        android:id="@+id/spot_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="30dp"
+        android:paddingBottom="10dp"
+        android:text="@string/info_request_network"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_medium"/>
+
+    <TextView
+        android:id="@+id/swellHeight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="30dp"

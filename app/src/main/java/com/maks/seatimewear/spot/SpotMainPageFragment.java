@@ -1,12 +1,14 @@
-package com.maks.seatimewear.components;
+package com.maks.seatimewear.spot;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.maks.seatimewear.R;
+import com.maks.seatimewear.model.Spot;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -15,7 +17,11 @@ import com.maks.seatimewear.R;
  */
 public class SpotMainPageFragment extends Fragment {
     private static final String ARG_PAGE = "Page";
+    private static final String ARG_SPOT = "Spot";
+
     private int mPageNumber;
+    private Spot mSpot;
+    TextView mName;
 
 
     public SpotMainPageFragment() {
@@ -29,10 +35,11 @@ public class SpotMainPageFragment extends Fragment {
      * @param page Page number.
      * @return A new instance of fragment SpotMainPageFragment.
      */
-    public static SpotMainPageFragment newInstance(int page) {
+    public static SpotMainPageFragment newInstance(int page, Spot spot) {
         SpotMainPageFragment fragment = new SpotMainPageFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
+        args.putSerializable(ARG_SPOT, spot);
         fragment.setArguments(args);
         return fragment;
     }
@@ -42,6 +49,7 @@ public class SpotMainPageFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mPageNumber = getArguments().getInt(ARG_PAGE);
+            mSpot = (Spot) getArguments().getSerializable(ARG_SPOT);
         }
     }
 
@@ -49,7 +57,10 @@ public class SpotMainPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_spot_main_page, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_spot_main_page, container, false);
+
+        mName = (TextView) rootView.findViewById(R.id.spot_name);
+        mName.setText(mSpot.getValue());
+        return rootView;
     }
 }

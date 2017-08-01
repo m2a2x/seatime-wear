@@ -156,9 +156,11 @@ public class PairConditionFragment extends Fragment {
 
 
     public class ForecastItem {
-        Swell swell;
-        Wind wind;
-        Condition condition;
+        public long timestamp;
+        public int rating;
+        public Swell swell;
+        public Wind wind;
+        public Condition condition;
     }
 
     public class ConditionItem {

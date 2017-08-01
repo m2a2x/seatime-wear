@@ -3,8 +3,10 @@ package com.maks.seatimewear.model;
 import com.j256.ormlite.table.DatabaseTable;
 import com.j256.ormlite.field.DatabaseField;
 
+import java.io.Serializable;
+
 @DatabaseTable
-public class Spot {
+public class Spot implements Serializable {
     @DatabaseField(id = true)
     private long _id;
 

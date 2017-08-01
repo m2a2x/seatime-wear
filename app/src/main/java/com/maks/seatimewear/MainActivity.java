@@ -19,11 +19,11 @@ import com.maks.seatimewear.components.PairDialogFragment;
 import com.maks.seatimewear.model.Option;
 import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.network.PairDataFragment;
+import com.maks.seatimewear.spot.SpotActivity;
 import com.maks.seatimewear.sql.DatabaseHelper;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class MainActivity extends WearableActivity implements PairDataFragment.OnPairDataListener {
     private DatabaseHelper databaseHelper = null;
@@ -231,6 +231,7 @@ public class MainActivity extends WearableActivity implements PairDataFragment.O
             for (Spot spot : spots) {
                 dao.create(spot);
             }
+            onResume();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

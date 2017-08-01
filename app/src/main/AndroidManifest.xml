@@ -42,7 +42,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.maks.seatimewear.MainActivity" />
         </activity>
-        <activity android:name=".SpotActivity"></activity>
+        <activity android:name=".spot.SpotActivity"></activity>
     </application>
 
 </manifest>

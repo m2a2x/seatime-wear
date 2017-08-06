@@ -34,15 +34,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".network.NetworkActivity"
-            android:label="@string/title_activity_network"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.maks.seatimewear.MainActivity" />
-        </activity>
-        <activity android:name=".spot.SpotActivity"></activity>
+        <activity android:name=".spot.SpotActivity" />
     </application>
 
 </manifest>

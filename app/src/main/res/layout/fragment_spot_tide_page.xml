@@ -1,28 +1,38 @@
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.maks.seatimewear.spot.SpotTidePageFragment">
-
-    <TextView
-        android:id="@+id/spot_name"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="30dp"
-        android:paddingBottom="10dp"
-        android:text="@string/info_request_network"
-        android:textAlignment="center"
-        android:textSize="@dimen/text_medium"/>
+        android:layout_height="match_parent"
+        android:layout_marginTop="30dp">
 
-    <com.maks.seatimewear.components.TideChart
-        android:id="@+id/TideChart"
-        android:layout_width="match_parent"
-        android:layout_height="113dp"
-        android:layout_marginTop="80dp"
-        app:textColor="#B6B6B6"
-        app:textSize="10sp"
-        app:lineSize="2dp"
-        app:labelHeight="18dp"
-        app:lineColor="#949A9F"/>
+
+        <TextView
+            android:id="@+id/spot_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:textSize="@dimen/text_medium"
+            android:layout_alignParentStart="true"
+            android:textColor="@color/text_highlight"/>
+
+        <com.maks.seatimewear.components.TideChart
+            android:id="@+id/TideChart"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginTop="50dp"
+            android:layout_below="@id/spot_name"
+            android:layout_alignParentStart="true"
+            app:textColor="#B6B6B6"
+            app:textSize="10sp"
+            app:lineSize="2dp"
+            app:labelHeight="18dp"
+            app:lineColor="#949A9F"
+            app:dimensionSize="1dp"
+            app:dimensionLineColor="#2C2C2C"/>
+    </RelativeLayout>
 </FrameLayout>

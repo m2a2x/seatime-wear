@@ -24,7 +24,7 @@ import com.maks.seatimewear.model.Wind;
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "seatime.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
 
     public static final String TIMESTAMP = "timestamp";
@@ -69,6 +69,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         } catch (SQLException e) {
             Log.e(DatabaseHelper.class.getName(), "Unable to upgrade database from version " + oldVer + " to new "
                     + newVer, e);
+        }
+    }
+
+    public void dropData() {
+        try {
+            TableUtils.dropTable(connectionSource, Spot.class, true);
+            TableUtils.dropTable(connectionSource, Tide.class, true);
+            TableUtils.dropTable(connectionSource, Swell.class, true);
+            TableUtils.dropTable(connectionSource, Condition.class, true);
+            TableUtils.dropTable(connectionSource, Wind.class, true);
+
+            TableUtils.createTable(connectionSource, Spot.class);
+            TableUtils.createTable(connectionSource, Tide.class);
+            TableUtils.createTable(connectionSource, Swell.class);
+            TableUtils.createTable(connectionSource, Condition.class);
+            TableUtils.createTable(connectionSource, Wind.class);
+        } catch (SQLException e) {
+            Log.e(DatabaseHelper.class.getName(), "Unable to drop database", e);
         }
     }
 

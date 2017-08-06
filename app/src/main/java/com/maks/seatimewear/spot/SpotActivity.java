@@ -11,23 +11,26 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.maks.seatimewear.R;
 import com.maks.seatimewear.components.PagerCountView;
 import com.maks.seatimewear.model.Condition;
+import com.maks.seatimewear.model.ConditionCollection;
 import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Swell;
 import com.maks.seatimewear.model.Tide;
 import com.maks.seatimewear.model.Wind;
-import com.maks.seatimewear.model.i.forecastI;
+import com.maks.seatimewear.model.i.ForecastI;
 import com.maks.seatimewear.network.PairConditionFragment;
+import com.maks.seatimewear.network.PairDataFragment;
 import com.maks.seatimewear.sql.DatabaseHelper;
 import com.maks.seatimewear.utils.Utils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.maks.seatimewear.sql.DatabaseHelper.SPOT_ID;
 import static com.maks.seatimewear.sql.DatabaseHelper.TIMESTAMP;
 
 public class SpotActivity extends FragmentActivity
-        implements PairConditionFragment.OnPairConditionListener, SpotScreenAdapter.TodayTidesCallback {
+        implements PairConditionFragment.OnPairConditionListener, SpotScreenAdapter.ScreenDataCallback {
 
     private DatabaseHelper databaseHelper = null;
     private int id;
@@ -114,39 +117,24 @@ public class SpotActivity extends FragmentActivity
     }
 
 
-    public void onSpotDataUpdated(ArrayList<PairConditionFragment.ForecastItem> forecasts,
-                                  ArrayList<PairConditionFragment.ConditionItem> conditions) {
+    public void onSpotDataUpdated(ConditionCollection conditions) {
         try {
             Dao<Tide, Integer> daoTide = getHelper().getTideDao();
             Dao<Swell, Integer> daoSwell= getHelper().getSwellDao();
             Dao<Wind, Integer> daoWind = getHelper().getWindDao();
             Dao<Condition, Integer> daoCondition= getHelper().getConditionDao();
 
-            for (PairConditionFragment.ConditionItem c: conditions) {
+            for (PairDataFragment.ConditionItem c: conditions.conditions) {
                 for (Tide tide : c.tide) {
-                    tide.setSpot(currentSpot);
                     daoUpdate(daoTide, tide);
                 }
             }
 
-            for (PairConditionFragment.ForecastItem f: forecasts) {
-                f.swell.setSpot(currentSpot);
-                f.swell.setTimestamp(f.timestamp);
-
+            for (PairDataFragment.ForecastItem f: conditions.forecasts) {
                 daoUpdate(daoSwell, f.swell);
-
-
-                f.wind.setSpot(currentSpot);
-                f.wind.setTimestamp(f.timestamp);
-
                 daoUpdate(daoWind, f.wind);
-
-                f.condition.setSpot(currentSpot);
-                f.condition.setTimestamp(f.timestamp);
-
                 daoUpdate(daoCondition, f.condition);
             }
-
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -175,7 +163,42 @@ public class SpotActivity extends FragmentActivity
         return tides;
     }
 
-    private <T extends forecastI> void
+    public Swell getNowSwell() {
+        Swell item;
+        try {
+            item = getNowForecast(getHelper().getSwellDao().queryBuilder());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return item;
+    }
+
+    public Wind getNowWind() {
+        Wind item;
+        try {
+            item = getNowForecast(getHelper().getWindDao().queryBuilder());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return item;
+    }
+
+    public <T extends ForecastI> T getNowForecast(QueryBuilder<T, Integer> queryBuilder) throws SQLException {
+        List<T> items;
+        T item = null;
+        queryBuilder.where()
+                .eq(SPOT_ID, id)
+                .and()
+                .between(TIMESTAMP, Utils.currentTimeUnix(), Utils.getEndOfDayUnix());
+        items = queryBuilder.limit((long) 1).query();
+        if (items.size() > 0) {
+            item = items.get(0);
+        }
+
+        return  item;
+    }
+
+    private <T extends ForecastI> void
         daoUpdate(Dao<T, Integer> dao, T sItem)
             throws SQLException  {
         T dbItem = getByTimestamp(

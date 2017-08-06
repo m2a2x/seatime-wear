@@ -8,22 +8,17 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.maks.seatimewear.model.Condition;
-import com.maks.seatimewear.model.Swell;
-import com.maks.seatimewear.model.Tide;
-import com.maks.seatimewear.model.Wind;
+import com.maks.seatimewear.model.ConditionCollection;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.maks.seatimewear.SystemConfiguration.getService;
+import static com.maks.seatimewear.SystemConfiguration.NETWORK_REPEAT_REQUEST_DELAY;
+import static com.maks.seatimewear.network.PairDataFragment.forecastDataMapping;
 import static com.maks.seatimewear.utils.Utils.getDayAfterTodayUnix;
 
 /**
@@ -32,17 +27,14 @@ import static com.maks.seatimewear.utils.Utils.getDayAfterTodayUnix;
  */
 public class PairConditionFragment extends Fragment {
     public static final String TAG = "PairConditionHelper";
-    private int REQUEST_DELAY = 5000;
 
     OnPairConditionListener mCallback;
 
     public interface OnPairConditionListener {
-        void onSpotDataUpdated(ArrayList<ForecastItem> forecasts,
-                              ArrayList<ConditionItem> conditions);
+        void onSpotDataUpdated(ConditionCollection conditions);
     }
 
-    private static final String url="http://10.0.2.2:3000/apiDevice/load";
-    //String url = "https://seatime.herokuapp.com/apiDevice/";
+    private static final String url= getService() + "load";
 
     private String uuidKey;
     private static int spotId;
@@ -76,7 +68,8 @@ public class PairConditionFragment extends Fragment {
             @Override
             public void onResponse(JSONObject response) {
             try {
-                dataMapping(response);
+                ConditionCollection conditions = forecastDataMapping(response);
+                mCallback.onSpotDataUpdated(conditions);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -103,37 +96,13 @@ public class PairConditionFragment extends Fragment {
                 errorListener
         );
 
-        request.setRetryPolicy(new DefaultRetryPolicy(REQUEST_DELAY, 5, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setRetryPolicy(new DefaultRetryPolicy(NETWORK_REPEAT_REQUEST_DELAY, 5, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         VolleyRequestController.getInstance(getActivity()).addToRequestQueue(request);
     }
 
     public void onPause() {
         super.onPause();
-        //stopPair();
     }
-
-
-
-    private void dataMapping(JSONObject response)  throws JSONException {
-        if (response != null) {
-
-            String pairNumber = response.optString("Pair");
-            if (!pairNumber.isEmpty()) {
-                return;
-            }
-
-            JSONArray forecast = response.getJSONArray("forecast");
-            Type listFType = new TypeToken<ArrayList<ForecastItem>>() {}.getType();
-            ArrayList<ForecastItem> forecasts = new Gson().fromJson(forecast.toString(), listFType);
-
-
-            JSONArray condition = response.getJSONArray("condition");
-            Type listCType = new TypeToken<ArrayList<ConditionItem>>() {}.getType();
-            ArrayList<ConditionItem> conditions = new Gson().fromJson(condition.toString(), listCType);
-            mCallback.onSpotDataUpdated(forecasts, conditions);
-        }
-    }
-
 
 
     @Override
@@ -152,19 +121,5 @@ public class PairConditionFragment extends Fragment {
         super.onDetach();
         // stopPair();
         mCallback = null;
-    }
-
-
-    public class ForecastItem {
-        public long timestamp;
-        public int rating;
-        public Swell swell;
-        public Wind wind;
-        public Condition condition;
-    }
-
-    public class ConditionItem {
-        int _id;
-        public ArrayList<Tide> tide;
     }
 }

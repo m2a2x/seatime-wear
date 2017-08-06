@@ -2,7 +2,7 @@ package com.maks.seatimewear.model;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.maks.seatimewear.model.i.forecastI;
+import com.maks.seatimewear.model.i.ForecastI;
 
 import java.io.Serializable;
 
@@ -15,13 +15,13 @@ import static com.maks.seatimewear.utils.Utils.timestampToTime;
  * [_id, spot_id, state, shift, timestamp]
  */
 @DatabaseTable
-public class Tide implements Serializable, forecastI {
+public class Tide implements Serializable, ForecastI {
 
     @DatabaseField(generatedId = true)
     private long id;
 
-    @DatabaseField(canBeNull = false, columnName = SPOT_ID, foreign = true)
-    private Spot spot;
+    @DatabaseField
+    private long spot_id;
 
     @DatabaseField
     private String state;
@@ -32,8 +32,8 @@ public class Tide implements Serializable, forecastI {
     @DatabaseField(columnName = TIMESTAMP)
     private long timestamp;
 
-    public void setSpot(Spot _spot) {
-        spot = _spot;
+    public void setSpot(long id) {
+        spot_id = id;
     }
 
     public String getTime() {

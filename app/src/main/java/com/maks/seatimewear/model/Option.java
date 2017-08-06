@@ -7,6 +7,12 @@ import com.j256.ormlite.field.DatabaseField;
 
 @DatabaseTable
 public class Option implements Serializable {
+
+    public static final String STATUS_NOTPAIRED = "NotPaired";
+    public static final String STATUS_PAIRED = "Paired";
+    public static final String STATUS_AWAITING = "Awaiting";
+
+
     @DatabaseField(generatedId = true)
     private long id;
 
@@ -16,9 +22,7 @@ public class Option implements Serializable {
     @DatabaseField
     private String key;
 
-    public Option() {
-
-    }
+    public Option() {}
 
     public Option(String _key, String _option) {
         setValue(_option);

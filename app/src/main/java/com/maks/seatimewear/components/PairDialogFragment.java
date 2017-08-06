@@ -12,6 +12,8 @@ import com.maks.seatimewear.R;
 public class PairDialogFragment extends DialogFragment {
     public static final String TAG = "PairDialog";
     String mPair;
+    TextView mText;
+
 
     public static PairDialogFragment newInstance(String pair) {
         PairDialogFragment f = new PairDialogFragment();
@@ -20,6 +22,11 @@ public class PairDialogFragment extends DialogFragment {
         f.setArguments(args);
 
         return f;
+    }
+
+    public void onRefresh(String pair) {
+        mPair = pair;
+        mText.setText(mPair);
     }
 
     @Override
@@ -34,8 +41,8 @@ public class PairDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_pair_dialog, container, false);
-        View tv = v.findViewById(R.id.info_text);
-        ((TextView)tv).setText(mPair);
+        mText = (TextView)v.findViewById(R.id.info_text);
+        mText.setText(mPair);
 
         return v;
     }

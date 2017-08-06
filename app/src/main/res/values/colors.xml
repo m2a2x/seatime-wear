@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Colors for primary UI elements -->
-    <item name="primary" type="color">@color/indigo</item>
+    <item name="primary" type="color">@color/white</item>
     <item name="primary_dark" type="color">@color/indigo_40b</item>
     <item name="primary_accent" type="color">@color/indigo_100b</item>
-    <item name="window_background" type="color">@color/indigo_15b</item>
+    <item name="window_background" type="color">#FF080808</item>
 
-    <item name="text_primary" type="color">#CCBBBBBB</item>
-    <item name="text_dark" type="color">#CC000000</item>
+    <item name="text_primary" type="color">@color/white</item>
+    <item name="text_secondary" type="color">#FF9D9D9D</item>
+    <item name="text_highlight" type="color">#FF80C1F9</item>
+    <item name="text_highlight_sec" type="color">#FF35F06E</item>
 
     <item name="white_80a" type="color">#CCFFFFFF</item>
     <item name="white_70a" type="color">#B3FFFFFF</item>
     <item name="white_60a" type="color">#99FFFFFF</item>
     <item name="white_50a" type="color">#80FFFFFF</item>
+    <item name="white_15a" type="color">#24FFFFFF</item>
 
     <!-- Material Design Indigo 500 palette for wearables -->
     <item name="indigo" type="color">#FF3F51B5</item>

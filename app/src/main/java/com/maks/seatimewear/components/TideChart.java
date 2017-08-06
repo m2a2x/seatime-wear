@@ -26,7 +26,7 @@ public class TideChart extends View {
     float mTextSize = 5.0f;
     float mTextHeight = 5.0f;
 
-    int mChartHeight = 40;
+    int mChartHeight = 50;
 
     int mLineColor = Color.WHITE;
     int mTextColor = Color.WHITE;
@@ -134,7 +134,7 @@ public class TideChart extends View {
         paint.setStrokeWidth(mDimensionLineSize);
         c.drawPath(lines, paint);
 
-        this.drawTime(c, contentWidth, this.mTides.size(), this.mTides, mTextPaint, mChartHeight);
+        this.drawTime(c, contentWidth, this.mTides.size(), this.mTides, mTextPaint, 15);
         if (mHasTideDescription) {
             this.drawTide(c, contentWidth, this.mTides.size(), this.mTides, mTextPaint, mChartHeight);
         }
@@ -178,7 +178,7 @@ public class TideChart extends View {
 
         while (i < pikes) {
             Tide tide = tides.get(i);
-            c.drawText(tide.getTime(), x * i + x / 2, 10, p);
+            c.drawText(tide.getTime(), x * i + x / 2, y, p);
             i++;
         }
     }

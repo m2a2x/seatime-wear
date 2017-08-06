@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.wearable.view.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.wearable.view.BoxInsetLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.maks.seatimewear.MainActivity"
-    tools:deviceIds="wear">
+    tools:deviceIds="wear"
+    android:background="@drawable/bg_img">
 
-    <RelativeLayout
-        android:id="@+id/button"
+    <!--<RelativeLayout
+        android:id="@+id/pairButton"
         android:layout_height="56dp"
         android:layout_width="match_parent"
         android:paddingTop="12dp"
@@ -21,16 +23,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="Click"
+            android:text="Update"
             style="@style/connectivity_indicator_text" />
 
-    </RelativeLayout>
+    </RelativeLayout>-->
 
 
-    <ListView
-        android:id="@+id/listview"
+    <android.support.wearable.view.WearableRecyclerView
+        android:id="@+id/recycler_launcher_view"
         android:layout_width="match_parent"
-        android:layout_marginTop="55dp"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:visibility="gone"/>
 
+    <RelativeLayout
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" >
+
+        <ProgressBar
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            android:indeterminate="true"/>
+    </RelativeLayout>
 </android.support.wearable.view.BoxInsetLayout>

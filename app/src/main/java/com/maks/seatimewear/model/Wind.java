@@ -3,7 +3,9 @@ package com.maks.seatimewear.model;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.maks.seatimewear.model.i.forecastI;
+import com.maks.seatimewear.model.i.ForecastI;
+
+import java.io.Serializable;
 
 import static com.maks.seatimewear.sql.DatabaseHelper.SPOT_ID;
 import static com.maks.seatimewear.sql.DatabaseHelper.TIMESTAMP;
@@ -13,12 +15,12 @@ import static com.maks.seatimewear.sql.DatabaseHelper.TIMESTAMP;
  * [_id, spot_id, state, shift, timestamp]
  */
 @DatabaseTable
-public class Wind implements forecastI {
+public class Wind implements Serializable, ForecastI {
     @DatabaseField(generatedId = true)
     private long id;
 
-    @DatabaseField(canBeNull = false, columnName = SPOT_ID, foreign = true)
-    private Spot spot;
+    @DatabaseField
+    private long spot_id;
 
     @DatabaseField
     private String compass;
@@ -33,10 +35,9 @@ public class Wind implements forecastI {
     private String unit;
 
     public Wind() { }
-
-
-    public void setSpot(Spot v) {
-        spot = v;
+    
+    public void setSpot(long id) {
+        spot_id = id;
     }
 
     public void setTimestamp(long v) {
@@ -45,5 +46,13 @@ public class Wind implements forecastI {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public long getSpeed() {
+        return speed;
+    }
+
+    public String getDirection() {
+        return compass;
     }
 }

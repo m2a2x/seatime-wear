@@ -11,8 +11,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.maks.seatimewear.BuildConfig;
 import com.maks.seatimewear.model.Condition;
 import com.maks.seatimewear.model.ConditionCollection;
+import com.maks.seatimewear.model.Option;
 import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Swell;
 import com.maks.seatimewear.model.Tide;
@@ -26,12 +28,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-import static com.maks.seatimewear.SystemConfiguration.getService;
-import static com.maks.seatimewear.SystemConfiguration.NETWORK_REPEAT_REQUEST_DELAY;
+import static com.maks.seatimewear.model.Option.STATUS_NOTPAIRED;
 import static com.maks.seatimewear.model.Option.STATUS_PAIRED;
-import static com.maks.seatimewear.utils.Utils.currentTimeUnix;
+import static com.maks.seatimewear.utils.Utils.getDayAfterTodayUnix;
 
 /**
  * {@link Fragment} subclass.
@@ -43,9 +43,23 @@ public class PairDataFragment extends Fragment {
 
     OnPairDataListener mCallback;
 
-    Handler mRequestHandler = new Handler();
+    private String mStatus;
+    private String mTimestamp;
 
-    Runnable mRequestRunnable = new Runnable() {
+
+
+    private Handler mRequestRefreshHandler = new Handler();
+    private Runnable mRequestRefreshRunnable = new Runnable() {
+        @Override
+        public void run() {
+        if (getNetwork().isNetwork()) {
+            startPair(mTimestamp);
+        }
+        }
+    };
+
+    private Handler mRequestHandler = new Handler();
+    private Runnable mRequestRunnable = new Runnable() {
         @Override
         public void run() {
             pairData();
@@ -78,7 +92,7 @@ public class PairDataFragment extends Fragment {
         void onPairFinished();
     }
 
-    private static final String url= getService() + "pair";
+    private static final String url= BuildConfig.URL + "pair";
 
     private String pairNumber;
     private String uuidKey;
@@ -99,6 +113,10 @@ public class PairDataFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         uuidKey = getArguments().getString("uuid");
+
+        if (uuidKey == null) {
+            throw new RuntimeException("uuid expected");
+        }
     }
 
     public void startPair(String _timestamp) {
@@ -113,6 +131,7 @@ public class PairDataFragment extends Fragment {
 
     public void stopPair() {
         mRequestHandler.removeCallbacks(mRequestRunnable);
+        mRequestRefreshHandler.removeCallbacks(mRequestRefreshRunnable);
         mCallback.onPairFinished();
     }
 
@@ -128,7 +147,7 @@ public class PairDataFragment extends Fragment {
                 return;
             }
             mCallback.onPairAwait(pairNumber);
-            mRequestHandler.postDelayed(mRequestRunnable, NETWORK_REPEAT_REQUEST_DELAY);
+            mRequestHandler.postDelayed(mRequestRunnable, BuildConfig.NETWORK_REPEAT_REQUEST_DELAY);
             }
         };
 
@@ -141,6 +160,7 @@ public class PairDataFragment extends Fragment {
 
         Map<String, String> params = new HashMap<>();
         params.put("uuid", uuidKey);
+        params.put("end", Long.toString(getDayAfterTodayUnix(BuildConfig.INIT_PRELOAD_DAYS)));
         params.put("device", android.os.Build.BRAND);
         if (!timestamp.isEmpty()) {
             params.put("timestamp", timestamp);
@@ -154,7 +174,7 @@ public class PairDataFragment extends Fragment {
             errorListener
         );
 
-        request.setRetryPolicy(new DefaultRetryPolicy(NETWORK_REPEAT_REQUEST_DELAY, 5, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setRetryPolicy(new DefaultRetryPolicy(BuildConfig.NETWORK_REPEAT_REQUEST_DELAY, 5, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         VolleyRequestController.getInstance(getActivity()).addToRequestQueue(request);
     }
 
@@ -217,6 +237,31 @@ public class PairDataFragment extends Fragment {
         return null;
     }
 
+
+    public boolean isNeedPair(Option statusOption, Option timestampOption) {
+        mStatus = statusOption != null ? statusOption.getValue() : STATUS_NOTPAIRED;
+        mTimestamp = timestampOption != null ? timestampOption.getValue() : "";
+
+        switch (mStatus) {
+            case STATUS_NOTPAIRED:
+                getNetwork().requireNetwork(new NetworkFragment.OnNetworkCheckCompleted() {
+                    @Override
+                    public void OnNetworkCheckCompleted(boolean isAvailable) {
+                    startPair(mTimestamp);
+                    }
+                });
+                return true;
+            case STATUS_PAIRED:
+            default:
+                mRequestRefreshHandler.removeCallbacks(mRequestRefreshRunnable);
+                mRequestRefreshHandler.postDelayed(mRequestRefreshRunnable, BuildConfig.NETWORK_REQUEST_DELAY);
+                return false;
+        }
+    }
+
+    private NetworkFragment getNetwork() {
+        return (NetworkFragment) getFragmentManager().findFragmentByTag(NetworkFragment.TAG);
+    }
 
 
     @Override

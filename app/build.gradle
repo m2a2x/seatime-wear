@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-
+def globalConf = rootProject.ext
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
@@ -9,11 +9,27 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+
+        buildConfigField "int", "NETWORK_REQUEST_DELAY", "15000"
+        buildConfigField "int", "NETWORK_REPEAT_REQUEST_DELAY", "5000"
+        buildConfigField "int", "SPOT_PAGE_PRELOAD_DAYS", "3"
+        buildConfigField "int", "INIT_PRELOAD_DAYS", "1"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    productFlavors {
+        local {
+            buildConfigField "String", "URL", "\"${globalConf.localUrl}\""
+            buildConfigField "boolean", "DIRECT_NETWORK", "true"
+        }
+        demo {
+            buildConfigField "String", "URL", "\"${globalConf.url}\""
+            buildConfigField "boolean", "DIRECT_NETWORK", "false"
         }
     }
 }

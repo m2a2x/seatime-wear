@@ -13,6 +13,9 @@ public class Spot implements Serializable {
     @DatabaseField
     private String name;
 
+    @DatabaseField
+    private long updatedAt;
+
     public long getId() {
         return _id;
     }
@@ -25,11 +28,11 @@ public class Spot implements Serializable {
         return name;
     }
 
-    public void setValue(String name) {
-        this.name = name;
+
+    public long getUpdatedAt() {
+        return updatedAt;
     }
 
-    // Will be used by the ArrayAdapter in the ListView
     @Override
     public String toString() {
         return name;

@@ -1,17 +1,27 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.maks.seatimewear.components.PairDialogFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:paddingBottom="10dp"
+        android:text="@string/info_pair_boarding"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_small" />
 
     <TextView
         android:id="@+id/info_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="30dp"
+        android:layout_marginTop="-10dp"
         android:paddingBottom="10dp"
         android:text="@string/info_request_network"
         android:textAlignment="center"
-        android:textSize="@dimen/text_giant"/>
+        android:textSize="@dimen/text_giant" />
 
-</FrameLayout>
+</LinearLayout>

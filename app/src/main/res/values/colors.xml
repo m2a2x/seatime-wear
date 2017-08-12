@@ -5,6 +5,9 @@
     <item name="primary_dark" type="color">@color/indigo_40b</item>
     <item name="primary_accent" type="color">@color/indigo_100b</item>
     <item name="window_background" type="color">#FF080808</item>
+    <item name="layer_background" type="color">#FF171F2A</item>
+
+
 
     <item name="text_primary" type="color">@color/white</item>
     <item name="text_secondary" type="color">#FF9D9D9D</item>

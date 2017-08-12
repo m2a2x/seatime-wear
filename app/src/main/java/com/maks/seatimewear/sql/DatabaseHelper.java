@@ -24,7 +24,7 @@ import com.maks.seatimewear.model.Wind;
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "seatime.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
 
     public static final String TIMESTAMP = "timestamp";

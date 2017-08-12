@@ -2,6 +2,7 @@ package com.maks.seatimewear;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.WearableRecyclerView;
@@ -10,7 +11,6 @@ import android.widget.RelativeLayout;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
 import com.maks.seatimewear.components.PairDialogFragment;
 import com.maks.seatimewear.model.Condition;
 import com.maks.seatimewear.model.ConditionCollection;
@@ -19,11 +19,9 @@ import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Swell;
 import com.maks.seatimewear.model.Tide;
 import com.maks.seatimewear.model.Wind;
-import com.maks.seatimewear.model.i.ForecastI;
 import com.maks.seatimewear.network.NetworkFragment;
 import com.maks.seatimewear.network.PairDataFragment;
-import com.maks.seatimewear.network.RefreshDataAdapter;
-import com.maks.seatimewear.spot.CustomCurvedChildLayoutManager;
+import com.maks.seatimewear.utils.CustomCurvedChildLayoutManager;
 import com.maks.seatimewear.spot.SpotActivity;
 import com.maks.seatimewear.sql.DatabaseHelper;
 
@@ -39,13 +37,13 @@ public class MainActivity extends WearableActivity
     // private static final SimpleDateFormat AMBIENT_DATE_FORMAT = new SimpleDateFormat("HH:mm", Locale.US);
 
     NetworkFragment networkFragment;
+    PairDataFragment pairDataFragment;
 
     private SpotListAdapter mListAdapter;
     String UUID = null;
 
     private RelativeLayout mProgress;
     WearableRecyclerView wearableRecyclerView;
-    RefreshDataAdapter refreshDataAdapter;
 
 
 
@@ -74,6 +72,16 @@ public class MainActivity extends WearableActivity
             ft.commit();
         }
 
+        pairDataFragment =
+            (PairDataFragment) getFragmentManager().findFragmentByTag(PairDataFragment.TAG);
+
+        if (pairDataFragment == null) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            pairDataFragment = PairDataFragment.newInstance(UUID);
+            ft.add(pairDataFragment, PairDataFragment.TAG);
+            ft.commit();
+        }
+
         try {
             Option op = getHelper().getOptionByKey("uuid");
             if (op != null) {
@@ -89,7 +97,6 @@ public class MainActivity extends WearableActivity
         mListAdapter = new SpotListAdapter(MainActivity.this, new ArrayList<Spot>());
         wearableRecyclerView.setAdapter(mListAdapter);
         mListAdapter.setListener(this);
-        refreshDataAdapter = new RefreshDataAdapter(this, UUID, networkFragment);
     }
 
     @Override
@@ -136,7 +143,7 @@ public class MainActivity extends WearableActivity
         try {
             Option status = getHelper().getOptionByKey("status");
             Option timestamp = getHelper().getOptionByKey("timestamp");
-            if (refreshDataAdapter.isNeedPair(status, timestamp)) {
+            if (pairDataFragment.isNeedPair(status, timestamp)) {
                 return;
             }
 
@@ -146,19 +153,15 @@ public class MainActivity extends WearableActivity
             ArrayList<Spot> spots = new ArrayList<>(dao.queryForAll());
             mListAdapter.addAll(spots);
             mListAdapter.notifyDataSetChanged();
-
             setLoading(false);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        refreshDataAdapter.onDestroy();
-
         if (databaseHelper != null) {
             OpenHelperManager.releaseHelper();
             databaseHelper = null;
@@ -168,7 +171,6 @@ public class MainActivity extends WearableActivity
     @Override
     protected void onPause() {
         super.onPause();
-        refreshDataAdapter.onStop();
     }
 
     private void updateDisplay() {
@@ -252,14 +254,17 @@ public class MainActivity extends WearableActivity
         try {
             Option status = getHelper().getOptionByKey("status");
             Option timestamp = getHelper().getOptionByKey("timestamp");
-            refreshDataAdapter.isNeedPair(status, timestamp);
+            pairDataFragment.isNeedPair(status, timestamp);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void onGlobalDataUpdate(ArrayList<Spot> spots, ConditionCollection conditions, String timestamp) {
-        getHelper().dropData();
+        setLoading(true);
+
+        final SQLiteDatabase db = getHelper().getWritableDatabase();
+        db.beginTransaction();
 
         try {
             Dao<Spot, Integer> daoSpot = getHelper().getSpotDao();
@@ -271,20 +276,22 @@ public class MainActivity extends WearableActivity
             Dao<Wind, Integer> daoWind = getHelper().getWindDao();
             Dao<Condition, Integer> daoCondition= getHelper().getConditionDao();
 
+            getHelper().dropData();
+
             for (Spot spot : spots) {
                 daoSpot.create(spot);
             }
 
             for (PairDataFragment.ConditionItem c: conditions.conditions) {
                 for (Tide tide : c.tide) {
-                    daoUpdate(daoTide, tide);
+                    daoTide.create(tide);
                 }
             }
 
             for (PairDataFragment.ForecastItem f: conditions.forecasts) {
-                daoUpdate(daoSwell, f.swell);
-                daoUpdate(daoWind, f.wind);
-                daoUpdate(daoCondition, f.condition);
+                daoSwell.create(f.swell);
+                daoWind.create(f.wind);
+                daoCondition.create(f.condition);
             }
 
             if (option != null) {
@@ -295,9 +302,13 @@ public class MainActivity extends WearableActivity
                 daoOption.create(option);
             }
 
-            onResume();
+            db.setTransactionSuccessful();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            db.endTransaction();
+            onResume();
+            setLoading(false);
         }
     }
 
@@ -306,37 +317,5 @@ public class MainActivity extends WearableActivity
             databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
         }
         return databaseHelper;
-    }
-
-    private <T extends ForecastI> void
-    daoUpdate(Dao<T, Integer> dao, T sItem)
-            throws SQLException  {
-        T dbItem = getByTimestamp(
-                sItem.getTimestamp(),
-                dao.queryBuilder(),
-                sItem.spot_id
-        );
-
-        if (dbItem != null) {
-            dao.update(dbItem);
-        } else {
-            dao.create(sItem);
-        }
-    }
-
-    private <T>T getByTimestamp (long timestamp, QueryBuilder<T, Integer> queryBuilder, long spot_id) throws SQLException {
-        ArrayList<T> items;
-
-
-        queryBuilder.where()
-                .eq("spot_id", spot_id)
-                .and()
-                .eq("timestamp", timestamp);
-
-        items = new ArrayList<>(queryBuilder.query());
-        if (items.size() > 0) {
-            return items.get(0);
-        }
-        return null;
     }
 }

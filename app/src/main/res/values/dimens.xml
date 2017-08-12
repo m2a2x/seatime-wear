@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Generic text dimensions for styles -->
-    <dimen name="text_giant">80sp</dimen>
+    <dimen name="text_giant">60sp</dimen>
+    <dimen name="text_large_extra">30sp</dimen>
     <dimen name="text_large">22sp</dimen>
-    <dimen name="text_medium">16sp</dimen>
+    <dimen name="text_medium">18sp</dimen>
     <dimen name="text_small">12sp</dimen>
 
-    <dimen name="giant_margin">15dp</dimen>
+    <dimen name="giant_margin">10dp</dimen>
 </resources>

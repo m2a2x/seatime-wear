@@ -8,17 +8,17 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.maks.seatimewear.BuildConfig;
 import com.maks.seatimewear.model.ConditionCollection;
+import com.maks.seatimewear.model.Spot;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.maks.seatimewear.SystemConfiguration.getService;
-import static com.maks.seatimewear.SystemConfiguration.NETWORK_REPEAT_REQUEST_DELAY;
 import static com.maks.seatimewear.network.PairDataFragment.forecastDataMapping;
+import static com.maks.seatimewear.utils.Utils.currentTimeUnix;
 import static com.maks.seatimewear.utils.Utils.getDayAfterTodayUnix;
 
 /**
@@ -32,20 +32,21 @@ public class PairConditionFragment extends Fragment {
 
     public interface OnPairConditionListener {
         void onSpotDataUpdated(ConditionCollection conditions);
+        void onDataDeprecated(boolean isDeprecated);
     }
 
-    private static final String url= getService() + "load";
+    private static final String url= BuildConfig.URL + "load";
 
     private String uuidKey;
-    private static int spotId;
+    private static Spot spot;
 
     public PairConditionFragment() {}
 
-    public static PairConditionFragment newInstance(String uuid, long id) {
+    public static PairConditionFragment newInstance(String uuid, Spot spot) {
         PairConditionFragment f = new PairConditionFragment();
         Bundle args = new Bundle();
         args.putString("uuid", uuid);
-        args.putLong("spotId", id);
+        args.putSerializable("spot", spot);
         f.setArguments(args);
         return f;
     }
@@ -55,12 +56,24 @@ public class PairConditionFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         uuidKey = getArguments().getString("uuid");
-        spotId = (int)getArguments().getLong("spotId");
+        spot = (Spot)getArguments().getSerializable("spot");
 
         if (uuidKey == null || uuidKey.isEmpty()) {
             throw new RuntimeException("uuidKey expected");
         }
-        startPair();
+
+        if (currentTimeUnix() > spot.getUpdatedAt() + getDayAfterTodayUnix(1)) {
+            NetworkFragment network = getNetwork();
+            if (network != null && network.isNetwork()) {
+                startPair();
+            } else {
+                mCallback.onDataDeprecated(true);
+            }
+        }
+    }
+
+    private NetworkFragment getNetwork() {
+        return (NetworkFragment) getFragmentManager().findFragmentByTag(NetworkFragment.TAG);
     }
 
     public void startPair() {
@@ -85,8 +98,8 @@ public class PairConditionFragment extends Fragment {
 
         Map<String, String> params = new HashMap<>();
         params.put("uuid", uuidKey);
-        params.put("spot", Integer.toString(spotId));
-        params.put("end", Long.toString(getDayAfterTodayUnix(4)));
+        params.put("spot", Long.toString(spot.getId()));
+        params.put("end", Long.toString(getDayAfterTodayUnix(BuildConfig.SPOT_PAGE_PRELOAD_DAYS)));
 
         RequestHelper request = new RequestHelper(
                 Request.Method.POST,
@@ -96,7 +109,7 @@ public class PairConditionFragment extends Fragment {
                 errorListener
         );
 
-        request.setRetryPolicy(new DefaultRetryPolicy(NETWORK_REPEAT_REQUEST_DELAY, 5, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setRetryPolicy(new DefaultRetryPolicy(BuildConfig.NETWORK_REPEAT_REQUEST_DELAY, 5, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         VolleyRequestController.getInstance(getActivity()).addToRequestQueue(request);
     }
 

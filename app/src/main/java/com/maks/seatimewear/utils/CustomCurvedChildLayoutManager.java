@@ -1,4 +1,4 @@
-package com.maks.seatimewear.spot;
+package com.maks.seatimewear.utils;
 
 import android.content.Context;
 import android.graphics.Path;
@@ -6,6 +6,9 @@ import android.graphics.PathMeasure;
 import android.support.wearable.view.CurvedChildLayoutManager;
 import android.support.wearable.view.WearableRecyclerView;
 import android.view.View;
+import android.widget.ImageView;
+
+import com.maks.seatimewear.R;
 
 public class CustomCurvedChildLayoutManager extends CurvedChildLayoutManager {
     private final Path mCurvePath = new Path();
@@ -24,7 +27,7 @@ public class CustomCurvedChildLayoutManager extends CurvedChildLayoutManager {
     private int mLayoutWidth;
     private int mLayoutHeight;
 
-    private static final float MAX_ICON_PROGRESS = 0.8f;
+    private static final float MAX_ICON_PROGRESS = 0.7f;
 
     public CustomCurvedChildLayoutManager(Context context) {
         super(context);
@@ -72,10 +75,14 @@ public class CustomCurvedChildLayoutManager extends CurvedChildLayoutManager {
 
             // Normalize for center
             float mProgressToCenter = Math.abs(0.5f - mYScrollProgress);
+            if (mProgressToCenter > 0.13) {
+                mProgressToCenter *= 1.2f;
+            }
             // Adjust to the maximum scale
             mProgressToCenter = Math.min(mProgressToCenter, MAX_ICON_PROGRESS);
-            child.setScaleX(1 - mProgressToCenter);
-            child.setScaleY(1 - mProgressToCenter);
+            ImageView imageView = (ImageView)child.findViewById(R.id.item_image);
+            imageView.setScaleX(1 - mProgressToCenter);
+            imageView.setScaleY(1 - mProgressToCenter);
         }
     }
 

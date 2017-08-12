@@ -9,26 +9,6 @@
     tools:deviceIds="wear"
     android:background="@drawable/bg_img">
 
-    <!--<RelativeLayout
-        android:id="@+id/pairButton"
-        android:layout_height="56dp"
-        android:layout_width="match_parent"
-        android:paddingTop="12dp"
-        android:onClick="onButtonClick"
-        style="@style/connectivity_indicator">
-
-
-        <TextView
-            android:id="@+id/connectivity_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="Update"
-            style="@style/connectivity_indicator_text" />
-
-    </RelativeLayout>-->
-
-
     <android.support.wearable.view.WearableRecyclerView
         android:id="@+id/recycler_launcher_view"
         android:layout_width="match_parent"
@@ -40,7 +20,7 @@
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" >
+        android:visibility="gone">
 
         <ProgressBar
             android:layout_width="100dp"

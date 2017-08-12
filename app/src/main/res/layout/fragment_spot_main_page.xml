@@ -6,19 +6,20 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginTop="35dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="30dp"
         tools:context="com.maks.seatimewear.spot.SpotMainPageFragment">
 
+        <!--Name-->
         <TextView
             android:id="@+id/spot_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/info_request_network"
             android:textSize="@dimen/text_medium"
-            android:layout_marginStart="10dp"
             android:layout_alignParentStart="true"
+            android:textStyle="bold"
             android:textColor="@color/text_highlight"/>
 
 
@@ -32,8 +33,10 @@
             android:textSize="@dimen/text_giant"
             android:layout_below="@id/spot_name"
             android:textColor="@color/text_primary"
+            android:layout_marginStart="-5dp"
             android:layout_marginTop="-5dp"/>
 
+        <!--Swell unit-->
         <TextView
             android:id="@+id/swell_unit"
             android:layout_width="wrap_content"
@@ -59,6 +62,7 @@
             android:layout_above="@id/swell_unit"
             android:textColor="@color/text_primary"/>
 
+        <!--Periods unit-->
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
@@ -70,34 +74,108 @@
             android:textColor="@color/text_primary" />
 
 
+        <!-- Secondary swell -->
 
-        <!--Wind-->
         <TextView
-            android:id="@+id/wind_direction"
+            android:id="@+id/swell_sec_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_sec_swell"
+            android:textSize="@dimen/text_small"
+            android:layout_below="@id/swell_height"
+            android:textColor="@color/text_highlight"
+            android:textAllCaps="true"/>
+
+        <TextView
+            android:id="@+id/swell_sec_height"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SW"
+            android:layout_below="@id/swell_sec_title"
+            android:layout_marginTop="-5dp"
+            android:text="5"
+            android:textColor="@color/text_secondary"
+            android:textSize="@dimen/text_large_extra" />
+
+        <TextView
+            android:id="@+id/swell_sec_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ft"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginTop="-2dp"
             android:textSize="@dimen/text_small"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@id/swell_height"/>
+            android:layout_toEndOf="@id/swell_sec_height"
+            android:layout_alignBottom="@id/swell_sec_height"
+            android:textColor="@color/text_secondary"
+            android:textAllCaps="true"/>
+
+
+        <!--Swell secondary period-->
+
+        <TextView
+            android:id="@+id/swell_sec_period"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="15"
+            android:textSize="@dimen/text_small"
+            android:layout_toEndOf="@id/swell_sec_height"
+            android:layout_above="@id/swell_sec_unit"
+            android:textColor="@color/text_secondary"
+            android:layout_marginLeft="1dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="S"
+            android:layout_toEndOf="@id/swell_sec_period"
+            android:layout_alignTop="@id/swell_sec_period"
+            android:textSize="@dimen/text_small"
+            android:textColor="@color/text_secondary" />
+
+        <!--Wind-->
 
 
         <TextView
             android:id="@+id/wind_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#FF35F06E"
             android:text="Offshore"
             android:textSize="@dimen/text_small"
-            android:layout_below="@id/wind_direction"
-            android:layout_alignParentEnd="true"/>
+            android:layout_marginTop="11dp"
+            android:layout_alignTop="@id/swell_height"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="5dp"
+            android:textAllCaps="true"/>
+
+
+        <TextView
+            android:id="@+id/wind_direction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SW"
+            android:textSize="@dimen/text_small"
+            android:layout_below="@id/wind_name"
+            android:layout_alignStart="@id/wind_name"/>
 
         <TextView
             android:id="@+id/wind_speed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="12Mph"
+            android:layout_marginLeft="5dp"
+            android:text="12"
             android:textSize="@dimen/text_small"
-            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@id/wind_direction"
+            android:layout_below="@id/wind_name" />
+
+        <TextView
+            android:id="@+id/wind_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mph"
+            android:textSize="@dimen/text_small"
+            android:layout_toEndOf="@id/wind_speed"
             android:layout_below="@id/wind_name" />
 
     </RelativeLayout>

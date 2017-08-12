@@ -12,9 +12,9 @@ import android.os.Message;
 import android.app.Fragment;
 import android.util.Log;
 
-import java.util.concurrent.TimeUnit;
+import com.maks.seatimewear.BuildConfig;
 
-import static com.maks.seatimewear.SystemConfiguration.isProduction;
+import java.util.concurrent.TimeUnit;
 
 
 public class NetworkFragment extends Fragment {
@@ -95,7 +95,7 @@ public class NetworkFragment extends Fragment {
     // Determine if there is a high-bandwidth network exists. Checks both the active
     // and bound networks. Returns false if no network is available (low or high-bandwidth).
     public boolean isNetwork() {
-        if (isProduction) {
+        if (!BuildConfig.DIRECT_NETWORK) {
             return  true;
         }
 

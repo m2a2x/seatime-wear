@@ -1,5 +1,7 @@
 package com.maks.seatimewear.spot;
 
+import android.app.FragmentTransaction;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
@@ -7,6 +9,7 @@ import android.support.v4.view.ViewPager;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.maks.seatimewear.R;
 import com.maks.seatimewear.components.PagerCountView;
@@ -17,6 +20,7 @@ import com.maks.seatimewear.model.Swell;
 import com.maks.seatimewear.model.Tide;
 import com.maks.seatimewear.model.Wind;
 import com.maks.seatimewear.model.i.ForecastI;
+import com.maks.seatimewear.network.NetworkFragment;
 import com.maks.seatimewear.network.PairConditionFragment;
 import com.maks.seatimewear.network.PairDataFragment;
 import com.maks.seatimewear.sql.DatabaseHelper;
@@ -34,11 +38,15 @@ public class SpotActivity extends FragmentActivity
 
     private DatabaseHelper databaseHelper = null;
     private int id;
+
     private PagerAdapter mPagerAdapter;
     private PagerCountView mPagerCountView;
     private ViewPager mPager;
 
-    private Spot currentSpot;
+
+    NetworkFragment networkFragment;
+
+    Spot currentSpot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +62,23 @@ public class SpotActivity extends FragmentActivity
             throw new RuntimeException(e);
         }
 
+
+        networkFragment =
+                (NetworkFragment) getFragmentManager().findFragmentByTag(NetworkFragment.TAG);
+
+        if (networkFragment == null) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            networkFragment = NetworkFragment.newInstance();
+            ft.add(networkFragment, NetworkFragment.TAG);
+            ft.commit();
+        }
+
+
         PairConditionFragment conditionFragment =
                 (PairConditionFragment) getFragmentManager().findFragmentByTag(PairConditionFragment.TAG);
 
         if (conditionFragment == null) {
-            conditionFragment = PairConditionFragment.newInstance(UUID, currentSpot.getId());
+            conditionFragment = PairConditionFragment.newInstance(UUID, currentSpot);
             getFragmentManager()
                     .beginTransaction()
                     .add(conditionFragment, PairConditionFragment.TAG)
@@ -116,28 +136,45 @@ public class SpotActivity extends FragmentActivity
         return databaseHelper;
     }
 
+    public void onDataDeprecated(boolean isDeprecated) {
+
+    }
+
+    public void onButtonClick() {
+
+    }
 
     public void onSpotDataUpdated(ConditionCollection conditions) {
+        final SQLiteDatabase db = getHelper().getWritableDatabase();
+        db.beginTransaction();
         try {
             Dao<Tide, Integer> daoTide = getHelper().getTideDao();
             Dao<Swell, Integer> daoSwell= getHelper().getSwellDao();
             Dao<Wind, Integer> daoWind = getHelper().getWindDao();
             Dao<Condition, Integer> daoCondition= getHelper().getConditionDao();
 
+            daoRemove(daoTide);
+            daoRemove(daoSwell);
+            daoRemove(daoWind);
+            daoRemove(daoCondition);
+
             for (PairDataFragment.ConditionItem c: conditions.conditions) {
                 for (Tide tide : c.tide) {
-                    daoUpdate(daoTide, tide);
+                    daoTide.create(tide);
                 }
             }
 
             for (PairDataFragment.ForecastItem f: conditions.forecasts) {
-                daoUpdate(daoSwell, f.swell);
-                daoUpdate(daoWind, f.wind);
-                daoUpdate(daoCondition, f.condition);
+                daoSwell.create(f.swell);
+                daoWind.create(f.wind);
+                daoCondition.create(f.condition);
             }
 
+            db.setTransactionSuccessful();
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } finally {
+            db.endTransaction();
         }
 
         mPager.setAdapter(mPagerAdapter);
@@ -198,34 +235,9 @@ public class SpotActivity extends FragmentActivity
         return  item;
     }
 
-    private <T extends ForecastI> void
-        daoUpdate(Dao<T, Integer> dao, T sItem)
-            throws SQLException  {
-        T dbItem = getByTimestamp(
-                sItem.getTimestamp(),
-                dao.queryBuilder()
-        );
-
-        if (dbItem != null) {
-            dao.update(dbItem);
-        } else {
-            dao.create(sItem);
-        }
-    }
-
-    private <T>T getByTimestamp (long timestamp, QueryBuilder<T, Integer> queryBuilder) throws SQLException {
-        ArrayList<T> items;
-
-
-        queryBuilder.where()
-                .eq("spot_id", id)
-                .and()
-                .eq("timestamp", timestamp);
-
-        items = new ArrayList<>(queryBuilder.query());
-        if (items.size() > 0) {
-            return items.get(0);
-        }
-        return null;
+    private <T> void daoRemove(Dao<T, Integer> dao) throws SQLException {
+        DeleteBuilder<T, Integer> deleteBuilder = dao.deleteBuilder();
+        deleteBuilder.where().eq("spot_id", id);
+        deleteBuilder.delete();
     }
 }

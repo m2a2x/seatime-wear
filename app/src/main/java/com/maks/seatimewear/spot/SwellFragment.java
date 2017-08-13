@@ -14,10 +14,10 @@ import com.maks.seatimewear.model.Wind;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link SpotMainPageFragment#newInstance} factory method to
+ * Use the {@link SwellFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SpotMainPageFragment extends Fragment {
+public class SwellFragment extends Fragment {
     private static final String ARG_PAGE = "Page";
     private static final String ARG_SPOT = "Spot";
     private static final String ARG_SWELL = "Swell";
@@ -29,7 +29,7 @@ public class SpotMainPageFragment extends Fragment {
     private Wind mWind;
 
 
-    public SpotMainPageFragment() {}
+    public SwellFragment() {}
 
     /**
      * Use this factory method to create a new instance of
@@ -38,8 +38,8 @@ public class SpotMainPageFragment extends Fragment {
      * @param page Page number.
      * @return A new instance of fragment SpotMainPageFragment.
      */
-    public static SpotMainPageFragment newInstance(int page, Swell swell, Wind wind, Spot spot) {
-        SpotMainPageFragment fragment = new SpotMainPageFragment();
+    public static SwellFragment newInstance(int page, Swell swell, Wind wind, Spot spot) {
+        SwellFragment fragment = new SwellFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
         args.putSerializable(ARG_SPOT, spot);

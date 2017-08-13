@@ -33,7 +33,7 @@
 
     <style name="connectivity_indicator_text">
         <item name="android:textColor">@color/connectivity_indicator_text</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="connectivity_indicator_icon">

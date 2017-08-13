@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * sequence.
  */
 
-public class SpotScreenAdapter  extends FragmentStatePagerAdapter {
+public class ScreenAdapter extends FragmentStatePagerAdapter {
 
     static final int SWELL_PAGE = 0;
     static final int TIDE_PAGE = 1;
@@ -30,7 +30,7 @@ public class SpotScreenAdapter  extends FragmentStatePagerAdapter {
         Wind getNowWind();
     }
 
-    public SpotScreenAdapter(FragmentManager fm, Spot cSpot, final ScreenDataCallback callback) {
+    public ScreenAdapter(FragmentManager fm, Spot cSpot, final ScreenDataCallback callback) {
         super(fm);
         currentSpot = cSpot;
         mCallback = callback;
@@ -40,15 +40,15 @@ public class SpotScreenAdapter  extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case SWELL_PAGE:
-                return SpotMainPageFragment.newInstance(
+                return SwellFragment.newInstance(
                         position,
                         mCallback.getNowSwell(),
                         mCallback.getNowWind(),
                         currentSpot);
             case TIDE_PAGE: {
-                return SpotTidePageFragment.newInstance(position, mCallback.getTodayTides(), currentSpot);
+                return TideFragment.newInstance(position, mCallback.getTodayTides(), currentSpot);
             }
-            default: return SpotMainPageFragment.newInstance(
+            default: return SwellFragment.newInstance(
                     position,
                     mCallback.getNowSwell(),
                     mCallback.getNowWind(),

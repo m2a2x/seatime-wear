@@ -14,6 +14,7 @@ android {
         buildConfigField "int", "NETWORK_REPEAT_REQUEST_DELAY", "5000"
         buildConfigField "int", "SPOT_PAGE_PRELOAD_DAYS", "3"
         buildConfigField "int", "INIT_PRELOAD_DAYS", "1"
+        buildConfigField "int", "DEPRECATION_TIME", globalConf.deprecationTime
     }
     buildTypes {
         release {
@@ -25,7 +26,7 @@ android {
     productFlavors {
         local {
             buildConfigField "String", "URL", "\"${globalConf.localUrl}\""
-            buildConfigField "boolean", "DIRECT_NETWORK", "true"
+            buildConfigField "boolean", "DIRECT_NETWORK", "false"
         }
         demo {
             buildConfigField "String", "URL", "\"${globalConf.url}\""

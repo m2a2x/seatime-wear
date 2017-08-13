@@ -5,16 +5,22 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.SnapHelper;
+import android.support.wearable.view.WearableRecyclerView;
+import android.view.Gravity;
+import android.view.View;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.maks.seatimewear.R;
-import com.maks.seatimewear.components.PagerCountView;
+import com.maks.seatimewear.utils.GravitySnapHelper;
 import com.maks.seatimewear.model.Condition;
 import com.maks.seatimewear.model.ConditionCollection;
+import com.maks.seatimewear.model.ConditionItem;
+import com.maks.seatimewear.model.ForecastItem;
 import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Swell;
 import com.maks.seatimewear.model.Tide;
@@ -22,8 +28,9 @@ import com.maks.seatimewear.model.Wind;
 import com.maks.seatimewear.model.i.ForecastI;
 import com.maks.seatimewear.network.NetworkFragment;
 import com.maks.seatimewear.network.PairConditionFragment;
-import com.maks.seatimewear.network.PairDataFragment;
 import com.maks.seatimewear.sql.DatabaseHelper;
+import com.maks.seatimewear.utils.RecyclerFixedHeader;
+import com.maks.seatimewear.utils.RecyclerTouchListener;
 import com.maks.seatimewear.utils.Utils;
 
 import java.sql.SQLException;
@@ -33,28 +40,28 @@ import java.util.List;
 import static com.maks.seatimewear.sql.DatabaseHelper.SPOT_ID;
 import static com.maks.seatimewear.sql.DatabaseHelper.TIMESTAMP;
 
-public class SpotActivity extends FragmentActivity
-        implements PairConditionFragment.OnPairConditionListener, SpotScreenAdapter.ScreenDataCallback {
+public class SpotActivity
+        extends FragmentActivity
+        implements PairConditionFragment.OnPairConditionListener,
+        ScreenAdapter.ScreenDataCallback {
 
     private DatabaseHelper databaseHelper = null;
     private int id;
 
-    private PagerAdapter mPagerAdapter;
-    private PagerCountView mPagerCountView;
-    private ViewPager mPager;
-
 
     NetworkFragment networkFragment;
-
+    WearableRecyclerView recyclerView;
+    ViewerAdapter mViewAdapter;
     Spot currentSpot;
+    RecyclerFixedHeader sectionItemDecoration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String UUID = this.getIntent().getExtras().getString("uuid");
-        id = (int) this.getIntent().getExtras().getLong("id");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spot);
 
+        String UUID = this.getIntent().getExtras().getString("uuid");
+        id = (int) this.getIntent().getExtras().getLong("id");
         try {
             Dao<Spot, Integer> dao = getHelper().getSpotDao();
             currentSpot = dao.queryForId(id);
@@ -64,7 +71,7 @@ public class SpotActivity extends FragmentActivity
 
 
         networkFragment =
-                (NetworkFragment) getFragmentManager().findFragmentByTag(NetworkFragment.TAG);
+            (NetworkFragment) getFragmentManager().findFragmentByTag(NetworkFragment.TAG);
 
         if (networkFragment == null) {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -86,25 +93,37 @@ public class SpotActivity extends FragmentActivity
         }
 
 
-        // Instantiate a ViewPager and a PagerAdapter.
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mPagerCountView = (PagerCountView) findViewById(R.id.pagerCount);
-        mPagerCountView.setPage(1);
-        mPagerAdapter = new SpotScreenAdapter(getSupportFragmentManager(), currentSpot, this);
-        mPager.setAdapter(mPagerAdapter);
+        recyclerView = (WearableRecyclerView) findViewById(R.id.recycler_view);
+        SnapHelper snapHelper = new GravitySnapHelper(Gravity.TOP);
+        snapHelper.attachToRecyclerView(recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setHasFixedSize(false);
 
-        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+        sectionItemDecoration =
+                new RecyclerFixedHeader(
+                    getResources().getDimensionPixelSize(R.dimen.recycler_section_header_height));
+        recyclerView.addItemDecoration(sectionItemDecoration);
 
-            @Override
-            public void onPageSelected(int position) {
-                mPagerCountView.setPage(position + 1);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {}
-        });
+        PagerAdapter mPagerAdapter = new ScreenAdapter(getSupportFragmentManager(), currentSpot, this);
+        mViewAdapter = new ViewerAdapter(this, mPagerAdapter);
+        recyclerView.setAdapter(mViewAdapter);
+        recyclerView.getLayoutManager().scrollToPosition(1);
+        recyclerView.addOnItemTouchListener(
+            new RecyclerTouchListener(this, recyclerView,
+                new RecyclerTouchListener.OnTouchActionListener() {
+                    @Override
+                    public void onClick(View view, int position, float y) {
+                        if (sectionItemDecoration.isItem(y)) {
+                            recyclerView.getLayoutManager().scrollToPosition(0);
+                        }
+                    }
+                    @Override
+                    public void onRightSwipe(View view, int position) {
+                    }
+                    @Override
+                    public void onLeftSwipe(View view, int position) {
+                    }
+                }));
     }
 
     @Override
@@ -116,19 +135,6 @@ public class SpotActivity extends FragmentActivity
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (mPager.getCurrentItem() == 0) {
-            // If the user is currently looking at the first step, allow the system to handle the
-            // Back button. This calls finish() on this activity and pops the back stack.
-            super.onBackPressed();
-        } else {
-            // Otherwise, select the previous step.
-            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
-        }
-    }
-
-
     private DatabaseHelper getHelper() {
         if (databaseHelper == null) {
             databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
@@ -137,11 +143,7 @@ public class SpotActivity extends FragmentActivity
     }
 
     public void onDataDeprecated(boolean isDeprecated) {
-
-    }
-
-    public void onButtonClick() {
-
+        mViewAdapter.setDepracated(isDeprecated);
     }
 
     public void onSpotDataUpdated(ConditionCollection conditions) {
@@ -158,13 +160,13 @@ public class SpotActivity extends FragmentActivity
             daoRemove(daoWind);
             daoRemove(daoCondition);
 
-            for (PairDataFragment.ConditionItem c: conditions.conditions) {
+            for (ConditionItem c: conditions.conditions) {
                 for (Tide tide : c.tide) {
                     daoTide.create(tide);
                 }
             }
 
-            for (PairDataFragment.ForecastItem f: conditions.forecasts) {
+            for (ForecastItem f: conditions.forecasts) {
                 daoSwell.create(f.swell);
                 daoWind.create(f.wind);
                 daoCondition.create(f.condition);
@@ -177,7 +179,7 @@ public class SpotActivity extends FragmentActivity
             db.endTransaction();
         }
 
-        mPager.setAdapter(mPagerAdapter);
+        //mPager.setAdapter(mPagerAdapter);
     }
 
     public ArrayList<Tide> getTodayTides() {

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
-
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -12,23 +11,19 @@ import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.maks.seatimewear.BuildConfig;
-import com.maks.seatimewear.model.Condition;
 import com.maks.seatimewear.model.ConditionCollection;
+import com.maks.seatimewear.model.ConditionItem;
+import com.maks.seatimewear.model.ForecastItem;
 import com.maks.seatimewear.model.Option;
 import com.maks.seatimewear.model.Spot;
-import com.maks.seatimewear.model.Swell;
 import com.maks.seatimewear.model.Tide;
-import com.maks.seatimewear.model.Wind;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import static com.maks.seatimewear.model.Option.STATUS_NOTPAIRED;
 import static com.maks.seatimewear.model.Option.STATUS_PAIRED;
 import static com.maks.seatimewear.utils.Utils.getDayAfterTodayUnix;
@@ -67,21 +62,6 @@ public class PairDataFragment extends Fragment {
     };
 
 
-    public class ForecastItem {
-        public long timestamp;
-        public long rating;
-        public long spot_id;
-        public Swell swell;
-        public Wind wind;
-        public Condition condition;
-    }
-
-    public class ConditionItem {
-        long _id;
-        long spot_id;
-        public ArrayList<Tide> tide;
-    }
-
     public interface OnPairDataListener {
         /** Called by PairDataFragment when Pair updated */
         void onGlobalDataUpdate(ArrayList<Spot> spots, ConditionCollection conditions, String timestamp);
@@ -100,6 +80,42 @@ public class PairDataFragment extends Fragment {
 
     public PairDataFragment() {}
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        uuidKey = getArguments().getString("uuid");
+
+        if (uuidKey == null || uuidKey.isEmpty()) {
+            throw new RuntimeException("uuid key expected");
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopPair();
+    }
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnPairDataListener) {
+            mCallback = (OnPairDataListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnPairDataListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        stopPair();
+        mCallback = null;
+    }
+
     public static PairDataFragment newInstance(String uuid) {
         PairDataFragment f = new PairDataFragment();
         Bundle args = new Bundle();
@@ -108,25 +124,9 @@ public class PairDataFragment extends Fragment {
         return f;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        uuidKey = getArguments().getString("uuid");
-
-        if (uuidKey == null) {
-            throw new RuntimeException("uuid expected");
-        }
-    }
-
     public void startPair(String _timestamp) {
         timestamp = _timestamp;
         mRequestRunnable.run();
-    }
-
-    public void onPause() {
-        super.onPause();
-        stopPair();
     }
 
     public void stopPair() {
@@ -201,7 +201,7 @@ public class PairDataFragment extends Fragment {
         }
     }
 
-    public static  ConditionCollection forecastDataMapping(JSONObject response)  throws JSONException {
+    public static ConditionCollection forecastDataMapping(JSONObject response) throws JSONException {
         if (response != null) {
 
             String pairNumber = response.optString("Pair");
@@ -210,10 +210,10 @@ public class PairDataFragment extends Fragment {
             }
 
             JSONArray forecast = response.getJSONArray("forecast");
-            Type listFType = new TypeToken<ArrayList<PairDataFragment.ForecastItem>>() {}.getType();
-            ArrayList<PairDataFragment.ForecastItem> forecasts = new Gson().fromJson(forecast.toString(), listFType);
+            Type listFType = new TypeToken<ArrayList<ForecastItem>>() {}.getType();
+            ArrayList<ForecastItem> forecasts = new Gson().fromJson(forecast.toString(), listFType);
 
-            for (PairDataFragment.ForecastItem f: forecasts) {
+            for (ForecastItem f: forecasts) {
                 f.swell.setSpot(f.spot_id);
                 f.swell.setTimestamp(f.timestamp);
                 f.wind.setSpot(f.spot_id);
@@ -223,11 +223,11 @@ public class PairDataFragment extends Fragment {
             }
 
             JSONArray condition = response.getJSONArray("condition");
-            Type listCType = new TypeToken<ArrayList<PairDataFragment.ConditionItem>>() {}.getType();
-            ArrayList<PairDataFragment.ConditionItem> conditions = new Gson().fromJson(condition.toString(), listCType);
+            Type listCType = new TypeToken<ArrayList<ConditionItem>>() {}.getType();
+            ArrayList<ConditionItem> conditions = new Gson().fromJson(condition.toString(), listCType);
 
 
-            for (PairDataFragment.ConditionItem c: conditions) {
+            for (ConditionItem c: conditions) {
                 for (Tide tide : c.tide) {
                     tide.setSpot(c.spot_id);
                 }
@@ -261,24 +261,5 @@ public class PairDataFragment extends Fragment {
 
     private NetworkFragment getNetwork() {
         return (NetworkFragment) getFragmentManager().findFragmentByTag(NetworkFragment.TAG);
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnPairDataListener) {
-            mCallback = (OnPairDataListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnPairDataListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        stopPair();
-        mCallback = null;
     }
 }

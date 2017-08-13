@@ -1,4 +1,5 @@
 package com.maks.seatimewear;
+
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -8,12 +9,13 @@ import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.WearableRecyclerView;
 import android.view.View;
 import android.widget.RelativeLayout;
-
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 import com.maks.seatimewear.components.PairDialogFragment;
 import com.maks.seatimewear.model.Condition;
 import com.maks.seatimewear.model.ConditionCollection;
+import com.maks.seatimewear.model.ConditionItem;
+import com.maks.seatimewear.model.ForecastItem;
 import com.maks.seatimewear.model.Option;
 import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Swell;
@@ -24,7 +26,6 @@ import com.maks.seatimewear.network.PairDataFragment;
 import com.maks.seatimewear.utils.CustomCurvedChildLayoutManager;
 import com.maks.seatimewear.spot.SpotActivity;
 import com.maks.seatimewear.sql.DatabaseHelper;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -53,12 +54,22 @@ public class MainActivity extends WearableActivity
         setContentView(R.layout.activity_main);
         setAmbientEnabled();
 
+        try {
+            Option op = getHelper().getOptionByKey("uuid");
+            if (op != null) {
+                UUID = op.getValue();
+            } else {
+                UUID = java.util.UUID.randomUUID().toString();
+                UUIDSet(UUID);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         wearableRecyclerView = (WearableRecyclerView) findViewById(R.id.recycler_launcher_view);
         wearableRecyclerView.setHasFixedSize(true);
         wearableRecyclerView.setCenterEdgeItems(true);
         wearableRecyclerView.setLayoutManager(new CustomCurvedChildLayoutManager(this));
-
-
 
         mProgress = (RelativeLayout) findViewById(R.id.progress_bar);
 
@@ -80,18 +91,6 @@ public class MainActivity extends WearableActivity
             pairDataFragment = PairDataFragment.newInstance(UUID);
             ft.add(pairDataFragment, PairDataFragment.TAG);
             ft.commit();
-        }
-
-        try {
-            Option op = getHelper().getOptionByKey("uuid");
-            if (op != null) {
-                UUID = op.getValue();
-            } else {
-                UUID = java.util.UUID.randomUUID().toString();
-                UUIDSet(UUID);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
 
         mListAdapter = new SpotListAdapter(MainActivity.this, new ArrayList<Spot>());
@@ -282,13 +281,13 @@ public class MainActivity extends WearableActivity
                 daoSpot.create(spot);
             }
 
-            for (PairDataFragment.ConditionItem c: conditions.conditions) {
+            for (ConditionItem c: conditions.conditions) {
                 for (Tide tide : c.tide) {
                     daoTide.create(tide);
                 }
             }
 
-            for (PairDataFragment.ForecastItem f: conditions.forecasts) {
+            for (ForecastItem f: conditions.forecasts) {
                 daoSwell.create(f.swell);
                 daoWind.create(f.wind);
                 daoCondition.create(f.condition);

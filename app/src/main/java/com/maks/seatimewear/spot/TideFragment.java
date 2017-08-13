@@ -13,14 +13,13 @@ import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Tide;
 
 import java.util.ArrayList;
-import java.util.EmptyStackException;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link SpotMainPageFragment#newInstance} factory method to
+ * Use the {@link SwellFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SpotTidePageFragment extends Fragment {
+public class TideFragment extends Fragment {
     private static final String ARG_PAGE = "Page";
     private static final String ARG_TIDES = "Tides";
     private static final String ARG_SPOT = "Spot";
@@ -33,10 +32,10 @@ public class SpotTidePageFragment extends Fragment {
     TextView mName;
 
 
-    public SpotTidePageFragment() {}
+    public TideFragment() {}
 
-    public static SpotTidePageFragment newInstance(int page, ArrayList<Tide> tides, Spot spot) {
-        SpotTidePageFragment fragment = new SpotTidePageFragment();
+    public static TideFragment newInstance(int page, ArrayList<Tide> tides, Spot spot) {
+        TideFragment fragment = new TideFragment();
 
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);

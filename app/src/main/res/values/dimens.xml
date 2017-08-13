@@ -8,4 +8,7 @@
     <dimen name="text_small">12sp</dimen>
 
     <dimen name="giant_margin">10dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="recycler_section_header_height">20dp</dimen>
 </resources>

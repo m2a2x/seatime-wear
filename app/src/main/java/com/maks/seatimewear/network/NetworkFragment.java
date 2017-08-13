@@ -11,9 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.app.Fragment;
 import android.util.Log;
-
 import com.maks.seatimewear.BuildConfig;
-
 import java.util.concurrent.TimeUnit;
 
 
@@ -27,9 +25,8 @@ public class NetworkFragment extends Fragment {
     // as this app reuses UI components for the various states of the app, which is dependent on
     // the state of the network.
     static final int UI_STATE_REQUEST_NETWORK = 1;
-    static final int UI_STATE_REQUESTING_NETWORK = 2;
-    static final int UI_STATE_NETWORK_CONNECTED = 3;
-    static final int UI_STATE_CONNECTION_TIMEOUT = 4;
+    static final int UI_STATE_NETWORK_CONNECTED = 2;
+    static final int UI_STATE_CONNECTION_TIMEOUT = 3;
 
     private OnNetworkCheckCompleted pendingCallback;
 
@@ -95,7 +92,7 @@ public class NetworkFragment extends Fragment {
     // Determine if there is a high-bandwidth network exists. Checks both the active
     // and bound networks. Returns false if no network is available (low or high-bandwidth).
     public boolean isNetwork() {
-        if (!BuildConfig.DIRECT_NETWORK) {
+        if (BuildConfig.DIRECT_NETWORK) {
             return  true;
         }
 

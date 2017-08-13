@@ -3,7 +3,6 @@ package com.maks.seatimewear.network;
 import android.content.Context;
 import android.os.Bundle;
 import android.app.Fragment;
-
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -11,10 +10,8 @@ import com.android.volley.VolleyError;
 import com.maks.seatimewear.BuildConfig;
 import com.maks.seatimewear.model.ConditionCollection;
 import com.maks.seatimewear.model.Spot;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.Map;
 import static com.maks.seatimewear.network.PairDataFragment.forecastDataMapping;
@@ -59,10 +56,10 @@ public class PairConditionFragment extends Fragment {
         spot = (Spot)getArguments().getSerializable("spot");
 
         if (uuidKey == null || uuidKey.isEmpty()) {
-            throw new RuntimeException("uuidKey expected");
+            throw new RuntimeException("uuid key expected");
         }
 
-        if (currentTimeUnix() > spot.getUpdatedAt() + getDayAfterTodayUnix(1)) {
+        if (currentTimeUnix() > spot.getUpdatedAt() + BuildConfig.DEPRECATION_TIME) {
             NetworkFragment network = getNetwork();
             if (network != null && network.isNetwork()) {
                 startPair();

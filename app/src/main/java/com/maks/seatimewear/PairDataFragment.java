@@ -1,4 +1,4 @@
-package com.maks.seatimewear.network;
+package com.maks.seatimewear;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,13 +10,16 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.maks.seatimewear.BuildConfig;
 import com.maks.seatimewear.model.ConditionCollection;
 import com.maks.seatimewear.model.ConditionItem;
 import com.maks.seatimewear.model.ForecastItem;
 import com.maks.seatimewear.model.Option;
 import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Tide;
+import com.maks.seatimewear.network.NetworkFragment;
+import com.maks.seatimewear.network.RequestHelper;
+import com.maks.seatimewear.network.VolleyRequestController;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -214,12 +217,7 @@ public class PairDataFragment extends Fragment {
             ArrayList<ForecastItem> forecasts = new Gson().fromJson(forecast.toString(), listFType);
 
             for (ForecastItem f: forecasts) {
-                f.swell.setSpot(f.spot_id);
-                f.swell.setTimestamp(f.timestamp);
-                f.wind.setSpot(f.spot_id);
-                f.wind.setTimestamp(f.timestamp);
-                f.condition.setSpot(f.spot_id);
-                f.condition.setTimestamp(f.timestamp);
+                f.set();
             }
 
             JSONArray condition = response.getJSONArray("condition");
@@ -228,9 +226,7 @@ public class PairDataFragment extends Fragment {
 
 
             for (ConditionItem c: conditions) {
-                for (Tide tide : c.tide) {
-                    tide.setSpot(c.spot_id);
-                }
+                c.set();
             }
             return new ConditionCollection(conditions, forecasts);
         }

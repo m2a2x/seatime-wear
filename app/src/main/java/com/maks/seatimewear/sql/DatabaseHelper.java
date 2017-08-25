@@ -16,6 +16,8 @@ import com.maks.seatimewear.model.Condition;
 import com.maks.seatimewear.model.Option;
 import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Swell;
+import com.maks.seatimewear.model.SwellPrimary;
+import com.maks.seatimewear.model.SwellSecondary;
 import com.maks.seatimewear.model.Tide;
 import com.maks.seatimewear.model.Wind;
 
@@ -24,7 +26,7 @@ import com.maks.seatimewear.model.Wind;
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "seatime.db";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 12;
 
 
     public static final String TIMESTAMP = "timestamp";
@@ -33,7 +35,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<Option, Integer> optionDao;
     private Dao<Spot, Integer> spotDao;
     private Dao<Tide, Integer> tideDao;
+
     private Dao<Swell, Integer> swellDao;
+    private Dao<SwellPrimary, Integer> swellPrimDao;
+    private Dao<SwellSecondary, Integer> swellSecDao;
+
     private Dao<Condition, Integer> conditionDao;
     private Dao<Wind, Integer> windDao;
 
@@ -48,7 +54,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, Option.class);
             TableUtils.createTable(connectionSource, Spot.class);
             TableUtils.createTable(connectionSource, Tide.class);
+
             TableUtils.createTable(connectionSource, Swell.class);
+            TableUtils.createTable(connectionSource, SwellPrimary.class);
+            TableUtils.createTable(connectionSource, SwellSecondary.class);
+
             TableUtils.createTable(connectionSource, Condition.class);
             TableUtils.createTable(connectionSource, Wind.class);
         } catch (SQLException e) {
@@ -62,7 +72,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, Option.class, true);
             TableUtils.dropTable(connectionSource, Spot.class, true);
             TableUtils.dropTable(connectionSource, Tide.class, true);
+
             TableUtils.dropTable(connectionSource, Swell.class, true);
+            TableUtils.dropTable(connectionSource, SwellPrimary.class, true);
+            TableUtils.dropTable(connectionSource, SwellSecondary.class, true);
+
             TableUtils.dropTable(connectionSource, Condition.class, true);
             TableUtils.dropTable(connectionSource, Wind.class, true);
             onCreate(sqliteDatabase, connectionSource);
@@ -76,13 +90,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
         try {
             TableUtils.dropTable(connectionSource, Spot.class, true);
             TableUtils.dropTable(connectionSource, Tide.class, true);
+
             TableUtils.dropTable(connectionSource, Swell.class, true);
+            TableUtils.dropTable(connectionSource, SwellPrimary.class, true);
+            TableUtils.dropTable(connectionSource, SwellSecondary.class, true);
+
             TableUtils.dropTable(connectionSource, Condition.class, true);
             TableUtils.dropTable(connectionSource, Wind.class, true);
 
             TableUtils.createTable(connectionSource, Spot.class);
             TableUtils.createTable(connectionSource, Tide.class);
             TableUtils.createTable(connectionSource, Swell.class);
+            TableUtils.createTable(connectionSource, SwellPrimary.class);
+            TableUtils.createTable(connectionSource, SwellSecondary.class);
             TableUtils.createTable(connectionSource, Condition.class);
             TableUtils.createTable(connectionSource, Wind.class);
         } catch (SQLException e) {
@@ -126,6 +146,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             swellDao = getDao(Swell.class);
         }
         return swellDao;
+    }
+
+    public Dao<SwellPrimary, Integer> getSwellPrimDao() throws SQLException {
+        if (swellPrimDao == null) {
+            swellPrimDao = getDao(SwellPrimary.class);
+        }
+        return swellPrimDao;
+    }
+
+    public Dao<SwellSecondary, Integer> getSwellSecDao() throws SQLException {
+        if (swellSecDao == null) {
+            swellSecDao = getDao(SwellSecondary.class);
+        }
+        return swellSecDao;
     }
 
     public Dao<Condition, Integer> getConditionDao() throws SQLException {

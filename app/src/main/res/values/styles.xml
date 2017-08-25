@@ -27,18 +27,159 @@
         <item name="android:scaleType">fitXY</item>
     </style>
 
-    <style name="connectivity_indicator">
-        <item name="android:background">@color/connectivity_indicator_bg</item>
-    </style>
-
-    <style name="connectivity_indicator_text">
-        <item name="android:textColor">@color/connectivity_indicator_text</item>
+    <style name="update_indicator_text">
+        <item name="android:textColor">@color/white_80a</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
     </style>
 
-    <style name="connectivity_indicator_icon">
-        <item name="android:tint">@color/connectivity_indicator_text</item>
+    <!--SpotPage-->
+
+    <!--Spot Name-->
+    <style name="spot_name">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:text">Spot name</item>
+        <item name="android:textSize">@dimen/text_spot_name</item>
+        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:fontFamily">@string/font_family_regular</item>
+        <item name="android:textColor">@color/text_highlight</item>
+    </style>
+
+    <!--Swell size-->
+    <style name="spot_swell_height">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">16dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">-2dp</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:text">0</item>
+        <item name="android:textSize">@dimen/text_giant</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">@string/font_family_light</item>
+    </style>
+
+    <!--Swell unit-->
+    <style name="spot_swell_unit">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:text">ft</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!--Swell period-->
+    <style name="spot_name_period">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">-3dp</item>
+        <item name="android:text">15</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <!--Period unit-->
+    <style name="spot_period_unit">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">-3dp</item>
+        <item name="android:text">s</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">@dimen/text_medium</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="spot_sec_swell_title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:text">@string/title_sec_swell</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">@dimen/text_extra_caps_small</item>
+        <item name="android:letterSpacing">.05</item>
+        <item name="android:layout_marginBottom">-7dp</item>
+        <item name="android:fontFamily">@string/font_family_light</item>
+    </style>
+
+    <style name="spot_sec_swell_height">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:text">0</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">@dimen/text_large_extra</item>
+        <item name="android:fontFamily">@string/font_family_light</item>
+    </style>
+
+    <style name="spot_sec_swell_unit">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginStart">1dp</item>
+        <item name="android:text">ft</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">@dimen/text_extra_small</item>
+        <item name="android:fontFamily">@string/font_family_light</item>
+    </style>
+
+
+    <!--Swell secondary period-->
+    <style name="spot_sec_swell_period">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">1dp</item>
+        <item name="android:text">0</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">@dimen/text_extra_small</item>
+        <item name="android:fontFamily">@string/font_family_light</item>
+    </style>
+
+    <style name="spot_sec_swell_period_unit">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:text">s</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">@dimen/text_extra_small</item>
+        <item name="android:fontFamily">@string/font_family_light</item>
+    </style>
+
+    <!--Wind-->
+    <style name="spot_wind_name">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#FF35F06E</item>
+        <item name="android:text">off</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">9dp</item>
+    </style>
+
+    <style name="spot_wind_dir">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:text">sw</item>
+        <item name="android:textSize">@dimen/text_extra_small</item>
+    </style>
+
+    <style name="spot_wind_speed">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">2dp</item>
+        <item name="android:text">12</item>
+        <item name="android:textSize">@dimen/text_extra_small</item>
+    </style>
+    <style name="spot_wind_unit">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">1dp</item>
+        <item name="android:text">mph</item>
+        <item name="android:textSize">@dimen/text_extra_small</item>
     </style>
 </resources>

@@ -7,17 +7,24 @@ import android.support.wearable.view.WearableRecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 import com.maks.seatimewear.R;
 import com.maks.seatimewear.components.PagerCountView;
 
-public class ViewerAdapter extends WearableRecyclerView.Adapter<WearableRecyclerView.ViewHolder> {
+class ViewerAdapter extends WearableRecyclerView.Adapter<WearableRecyclerView.ViewHolder> {
+
+    public interface NavigationMenuListener extends View.OnClickListener {
+        void onClick(View v);
+    }
 
     private LayoutInflater layoutInflater;
     private PagerAdapter mPagerAdapter;
-    Context context;
-    boolean mDeprecated = false;
+    private Context context;
+    private boolean mNotifyOnChange = true;
+    private int mColor = R.color.spot_update_panel_color;
 
-    public ViewerAdapter(Context context, PagerAdapter pagerAdapter) {
+    ViewerAdapter(Context context, PagerAdapter pagerAdapter) {
         this.layoutInflater = LayoutInflater.from(context);
         this.context = context;
         mPagerAdapter = pagerAdapter;
@@ -41,11 +48,11 @@ public class ViewerAdapter extends WearableRecyclerView.Adapter<WearableRecycler
         View item;
         switch (viewType) {
             case 0:
-                item = layoutInflater.inflate(R.layout.item_recycler_menu, parent, false);
-                return new Menu(item);
+                item = layoutInflater.inflate(R.layout.spot_detail_menu, parent, false);
+                return new Menu(item, this.context);
             case 1:
             default:
-                item = layoutInflater.inflate(R.layout.item_recycler_view, parent, false);
+                item = layoutInflater.inflate(R.layout.spot_detail_view, parent, false);
                 return new ViewHolderData(item);
         }
     }
@@ -57,7 +64,8 @@ public class ViewerAdapter extends WearableRecyclerView.Adapter<WearableRecycler
 
         switch (holder.getItemViewType()) {
             case 0:
-                // Menu menu = (Menu)holder;
+                Menu menu = (Menu)holder;
+                menu.setColor(mColor);
                 // viewHolder0.image.setImageResource(item.getDrawable());
                 // viewHolder0.appName.setText(item.getName());
                 break;
@@ -75,8 +83,9 @@ public class ViewerAdapter extends WearableRecyclerView.Adapter<WearableRecycler
         return 2;
     }
 
-    public void setDepracated(boolean isDeprecated) {
-        mDeprecated = isDeprecated;
+    public void setColor(int color) {
+        mColor = color;
+        if (mNotifyOnChange) notifyDataSetChanged();
     }
 
     class ViewHolderData extends WearableRecyclerView.ViewHolder {
@@ -109,8 +118,25 @@ public class ViewerAdapter extends WearableRecyclerView.Adapter<WearableRecycler
     }
 
     class Menu extends WearableRecyclerView.ViewHolder {
-        public Menu(final View v) {
+        private View currentV;
+
+        public Menu(final View v, Context context) {
             super(v);
+            currentV = v;
+
+            TextView refreshButton = (TextView) v.findViewById(R.id.refresh);
+
+            if (context instanceof NavigationMenuListener) {
+                refreshButton.setOnClickListener((NavigationMenuListener) context);
+            } else {
+                throw new RuntimeException(context.toString()
+                    + " must implement NavigationMenuListener");
+            }
+
+        }
+
+        public void setColor(int c) {
+            currentV.setBackgroundResource(c);
         }
     }
 }

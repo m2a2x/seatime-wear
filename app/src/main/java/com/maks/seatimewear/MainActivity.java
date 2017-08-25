@@ -19,10 +19,11 @@ import com.maks.seatimewear.model.ForecastItem;
 import com.maks.seatimewear.model.Option;
 import com.maks.seatimewear.model.Spot;
 import com.maks.seatimewear.model.Swell;
+import com.maks.seatimewear.model.SwellPrimary;
+import com.maks.seatimewear.model.SwellSecondary;
 import com.maks.seatimewear.model.Tide;
 import com.maks.seatimewear.model.Wind;
 import com.maks.seatimewear.network.NetworkFragment;
-import com.maks.seatimewear.network.PairDataFragment;
 import com.maks.seatimewear.utils.CustomCurvedChildLayoutManager;
 import com.maks.seatimewear.spot.SpotActivity;
 import com.maks.seatimewear.sql.DatabaseHelper;
@@ -271,7 +272,11 @@ public class MainActivity extends WearableActivity
             Option option = getHelper().getOptionByKey("timestamp");
 
             Dao<Tide, Integer> daoTide = getHelper().getTideDao();
+
             Dao<Swell, Integer> daoSwell= getHelper().getSwellDao();
+            Dao<SwellPrimary, Integer> daoPrimSwell= getHelper().getSwellPrimDao();
+            Dao<SwellSecondary, Integer> daoSecSwell= getHelper().getSwellSecDao();
+
             Dao<Wind, Integer> daoWind = getHelper().getWindDao();
             Dao<Condition, Integer> daoCondition= getHelper().getConditionDao();
 
@@ -288,7 +293,9 @@ public class MainActivity extends WearableActivity
             }
 
             for (ForecastItem f: conditions.forecasts) {
-                daoSwell.create(f.swell);
+                daoSwell.create(f.swell.combined);
+                daoPrimSwell.create(f.swell.primary);
+                daoSecSwell.create(f.swell.secondary);
                 daoWind.create(f.wind);
                 daoCondition.create(f.condition);
             }

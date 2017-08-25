@@ -16,6 +16,9 @@ public class Spot implements Serializable {
     @DatabaseField
     private long updatedAt;
 
+    @DatabaseField
+    private String timezone;
+
     public long getId() {
         return _id;
     }
@@ -28,6 +31,9 @@ public class Spot implements Serializable {
         return name;
     }
 
+    public String getTimezone() {
+        return timezone;
+    }
 
     public long getUpdatedAt() {
         return updatedAt;

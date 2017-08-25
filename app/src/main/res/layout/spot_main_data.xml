@@ -1,0 +1,137 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.maks.seatimewear.spot.SpotMainData">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="40dp">
+
+        <!--Name-->
+        <TextView
+            android:id="@+id/spot_name"
+            style="@style/spot_name"/>
+
+
+
+        <RelativeLayout
+            android:id="@+id/spot_swell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/spot_name">
+
+            <!--Swell size-->
+            <TextView
+                android:id="@+id/swell_height"
+                style="@style/spot_swell_height"/>
+
+            <!--Swell unit-->
+            <TextView
+                android:id="@+id/swell_unit"
+                android:layout_toEndOf="@id/swell_height"
+                android:layout_alignBottom="@id/swell_height"
+                style="@style/spot_swell_unit"/>
+
+
+            <!--Swell period-->
+            <TextView
+                android:id="@+id/swell_period"
+                android:layout_toEndOf="@id/swell_height"
+                android:layout_above="@id/swell_unit"
+                style="@style/spot_name_period"/>
+
+            <!--Period unit-->
+            <TextView
+                android:id="@+id/textView"
+                android:layout_toEndOf="@id/swell_period"
+                android:layout_above="@id/swell_unit"
+                style="@style/spot_period_unit"/>
+        </RelativeLayout>
+
+        <!-- Secondary swell -->
+        <RelativeLayout
+            android:id="@+id/swell_sec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/spot_swell"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginEnd="40dp">
+
+            <TextView
+                android:id="@+id/swell_sec_title"
+                style="@style/spot_sec_swell_title"/>
+
+            <TextView
+                android:id="@+id/swell_sec_height"
+                android:layout_below="@id/swell_sec_title"
+                style="@style/spot_sec_swell_height"/>
+
+            <TextView
+                android:id="@+id/swell_sec_unit"
+                android:layout_alignBottom="@id/swell_sec_height"
+                android:layout_toEndOf="@id/swell_sec_height"
+                style="@style/spot_sec_swell_unit"/>
+
+
+            <TextView
+                android:id="@+id/swell_sec_period"
+                android:layout_toEndOf="@id/swell_sec_height"
+                android:layout_above="@id/swell_sec_unit"
+                style="@style/spot_sec_swell_period"/>
+
+            <TextView
+                android:layout_alignTop="@id/swell_sec_period"
+                android:layout_toEndOf="@id/swell_sec_period"
+                style="@style/spot_sec_swell_period_unit"/>
+
+        </RelativeLayout>
+
+
+        <!--Wind-->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/swell_sec"
+            android:layout_alignStart="@+id/swell_sec"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/wind_name"
+                style="@style/spot_wind_name" />
+
+            <TextView
+                android:id="@+id/wind_speed"
+                style="@style/spot_wind_speed" />
+
+            <TextView
+                android:id="@+id/wind_unit"
+                style="@style/spot_wind_unit" />
+        </LinearLayout>
+
+
+        <!--Tide-->
+        <com.maks.seatimewear.components.TideChart
+            android:id="@+id/tideChart"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_below="@id/spot_swell"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="30dp"
+            app:textColor="#7092AB"
+            app:lineSize="2dp"
+            app:textSize="8sp"
+            app:lineColor="#949A9F"
+            app:dimensionSize="1dp"
+            app:progressColor="@color/text_highlight"
+            app:dimensionLineColor="#22303B"/>
+
+    </RelativeLayout>
+</FrameLayout>

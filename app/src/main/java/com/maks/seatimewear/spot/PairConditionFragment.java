@@ -1,4 +1,4 @@
-package com.maks.seatimewear.network;
+package com.maks.seatimewear.spot;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,11 +10,15 @@ import com.android.volley.VolleyError;
 import com.maks.seatimewear.BuildConfig;
 import com.maks.seatimewear.model.ConditionCollection;
 import com.maks.seatimewear.model.Spot;
+import com.maks.seatimewear.network.NetworkFragment;
+import com.maks.seatimewear.network.RequestHelper;
+import com.maks.seatimewear.network.VolleyRequestController;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
-import static com.maks.seatimewear.network.PairDataFragment.forecastDataMapping;
+import static com.maks.seatimewear.PairDataFragment.forecastDataMapping;
 import static com.maks.seatimewear.utils.Utils.currentTimeUnix;
 import static com.maks.seatimewear.utils.Utils.getDayAfterTodayUnix;
 
@@ -22,6 +26,7 @@ import static com.maks.seatimewear.utils.Utils.getDayAfterTodayUnix;
  * {@link Fragment} subclass.
  * For pair data between device and web service
  */
+
 public class PairConditionFragment extends Fragment {
     public static final String TAG = "PairConditionHelper";
 
@@ -30,6 +35,7 @@ public class PairConditionFragment extends Fragment {
     public interface OnPairConditionListener {
         void onSpotDataUpdated(ConditionCollection conditions);
         void onDataDeprecated(boolean isDeprecated);
+        void onUpdateFinished(boolean isSuccessful);
     }
 
     private static final String url= BuildConfig.URL + "load";
@@ -67,6 +73,21 @@ public class PairConditionFragment extends Fragment {
                 mCallback.onDataDeprecated(true);
             }
         }
+    }
+
+
+    public void requestedUpdate(final OnPairConditionListener callback) {
+        getNetwork().requireNetwork(new NetworkFragment.OnNetworkCheckCompleted() {
+            @Override
+            public void OnNetworkCheckCompleted(boolean isAvailable) {
+                if (isAvailable) {
+                    startPair();
+                    callback.onUpdateFinished(isAvailable);
+                } else {
+                    callback.onUpdateFinished(isAvailable);
+                }
+            }
+        });
     }
 
     private NetworkFragment getNetwork() {

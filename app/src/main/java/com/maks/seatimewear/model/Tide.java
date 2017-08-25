@@ -3,6 +3,7 @@ package com.maks.seatimewear.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import com.maks.seatimewear.model.i.ForecastI;
+import com.maks.seatimewear.utils.Utils;
 
 import java.io.Serializable;
 
@@ -39,7 +40,6 @@ public class Tide implements Serializable, ForecastI {
     public String getTime() {
         return timestampToTime(timestamp);
     }
-
 
     public void setTimestamp(long v) {
         timestamp = v;

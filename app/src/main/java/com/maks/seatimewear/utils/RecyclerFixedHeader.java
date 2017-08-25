@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import com.maks.seatimewear.R;
 
 public class RecyclerFixedHeader extends RecyclerView.ItemDecoration {
-
     private final int headerOffset;
     private View headerView;
+    private boolean disabled = false;
 
     public RecyclerFixedHeader(int headerHeight) {
         headerOffset = headerHeight;
@@ -22,6 +22,10 @@ public class RecyclerFixedHeader extends RecyclerView.ItemDecoration {
         super.getItemOffsets(outRect, view, parent, state);
         int pos = parent.getChildAdapterPosition(view);
         if (pos == 0) {
+            if (disabled) {
+                outRect.top = 0;
+                return;
+            }
             outRect.top = headerOffset;
         }
     }
@@ -29,11 +33,10 @@ public class RecyclerFixedHeader extends RecyclerView.ItemDecoration {
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
-
-        if (headerView == null) {
-            headerView = inflateHeaderView(parent);
-            fixLayoutSize(headerView, parent);
+        if (disabled) {
+            return;
         }
+        fixLayoutSize(getHeaderView(parent), parent);
 
         for (int i = 0; i < parent.getChildCount(); i++) {
             View child = parent.getChildAt(i);
@@ -42,6 +45,13 @@ public class RecyclerFixedHeader extends RecyclerView.ItemDecoration {
                 drawHeader(c, child, headerView);
             }
         }
+    }
+
+    private View getHeaderView(RecyclerView parent) {
+        if (headerView == null) {
+            headerView = inflateHeaderView(parent);
+        }
+        return headerView;
     }
 
     private void drawHeader(Canvas c, View child, View headerView) {
@@ -57,6 +67,9 @@ public class RecyclerFixedHeader extends RecyclerView.ItemDecoration {
     }
 
     public boolean isItem(float y) {
+        if (disabled) {
+            return false;
+        }
         return  y < headerView.getHeight();
     }
 
@@ -75,6 +88,10 @@ public class RecyclerFixedHeader extends RecyclerView.ItemDecoration {
 
         view.measure(childWidth,childHeight);
         view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+    }
+
+    public void disable(boolean isDisabled) {
+        this.disabled = isDisabled;
     }
 }
 

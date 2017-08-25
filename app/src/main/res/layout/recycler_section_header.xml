@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:id="@+id/pairButton"
-android:layout_height="@dimen/recycler_section_header_height"
-android:layout_width="match_parent"
-android:paddingTop="3dp"
-android:onClick="onButtonClick"
-style="@style/connectivity_indicator">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pairButton"
+    android:layout_height="@dimen/recycler_section_header_height"
+    android:layout_width="match_parent"
+    android:paddingTop="3dp"
+    android:background="@color/attention_color">
 
 
 <TextView
     android:id="@+id/connectivity_text"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerHorizontal="true"
-    android:text="Update"
-    style="@style/connectivity_indicator_text" />
+    android:text="@string/data_update"
+    style="@style/update_indicator_text" />
 
 </RelativeLayout>

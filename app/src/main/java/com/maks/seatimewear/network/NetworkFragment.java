@@ -171,6 +171,11 @@ public class NetworkFragment extends Fragment {
     public void releaseHighBandwidthNetwork() {
         mConnectivityManager.bindProcessToNetwork(null);
         unregisterNetworkCallback();
+
+        if (pendingCallback != null) {
+            pendingCallback.OnNetworkCheckCompleted(false);
+        }
+        pendingCallback = null;
     }
 
     public void addWifiNetwork() {

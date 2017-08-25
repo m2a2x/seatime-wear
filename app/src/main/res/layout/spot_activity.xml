@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/layer_background"
+    android:background="@drawable/bg_spot"
     tools:context="com.maks.seatimewear.spot.SpotActivity">
     <android.support.wearable.view.WearableRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <RelativeLayout
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/layer_background"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            android:indeterminate="true"/>
+    </RelativeLayout>
 </RelativeLayout>

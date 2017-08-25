@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link SwellFragment#newInstance} factory method to
+ * Use the {@link SpotMainData#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class TideFragment extends Fragment {
@@ -58,12 +58,14 @@ public class TideFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container,
-                             Bundle savedInstanceState) {
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_spot_tide_page, container, false);
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState
+    ) {
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.spot_additional_data, container, false);
         this.mTc = (TideChart) rootView.findViewById(R.id.TideChart);
-        this.mTc.setTides(mTides);
+        // this.mTc.setTides(mTides);
 
         mName = (TextView) rootView.findViewById(R.id.spot_name);
         mName.setText(mSpot.getValue());

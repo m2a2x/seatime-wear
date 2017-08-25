@@ -20,5 +20,6 @@
         android:layout_centerInParent="true"
         app:pageCount="2"
         app:pageStart="1"
-        app:radius="3dp"/>
+        app:radius="3dp"
+        android:visibility="gone"/>
 </RelativeLayout>

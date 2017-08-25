@@ -7,7 +7,6 @@
     <string name="network_disconnected">Disconnected</string>
     <string name="network_connecting">Connecting</string>
 
-    <string name="data_pair">Pair</string>
 
     <string name="info_request_network">0000</string>
     <string name="info_release_network">Network is now available</string>
@@ -20,4 +19,8 @@
 
     <string name="info_pair_boarding">Type pair text on\nseatime.com</string>
     <string name="title_sec_swell">Secondary</string>
+
+
+    <string name="data_update">Update</string>
+    <string name="refresh_forecast">Refresh forecasts</string>
 </resources>

@@ -39,19 +39,16 @@ public class ScreenAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case SWELL_PAGE:
-                return SwellFragment.newInstance(
-                        position,
-                        mCallback.getNowSwell(),
-                        mCallback.getNowWind(),
-                        currentSpot);
             case TIDE_PAGE: {
                 return TideFragment.newInstance(position, mCallback.getTodayTides(), currentSpot);
             }
-            default: return SwellFragment.newInstance(
+
+            case SWELL_PAGE:
+            default: return SpotMainData.newInstance(
                     position,
                     mCallback.getNowSwell(),
                     mCallback.getNowWind(),
+                    mCallback.getTodayTides(),
                     currentSpot);
         }
 
@@ -59,6 +56,6 @@ public class ScreenAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 2;
+        return 1;
     }
 }

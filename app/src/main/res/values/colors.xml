@@ -7,11 +7,9 @@
     <item name="window_background" type="color">#FF080808</item>
     <item name="layer_background" type="color">#FF171F2A</item>
 
-
-
     <item name="text_primary" type="color">@color/white</item>
     <item name="text_secondary" type="color">#FF9D9D9D</item>
-    <item name="text_highlight" type="color">#FF80C1F9</item>
+    <item name="text_highlight" type="color">#FF5AB7FC</item>
     <item name="text_highlight_sec" type="color">#FF35F06E</item>
 
     <item name="white_80a" type="color">#CCFFFFFF</item>
@@ -31,4 +29,7 @@
     <!-- Alert overlay colors -->
     <item name="connectivity_indicator_text" type="color">#9d9d9d</item>
     <item name="connectivity_indicator_bg" type="color">#434343</item>
+
+    <item name="attention_color" type="color">#FFFF2F57</item>
+    <item name="spot_update_panel_color" type="color">#FF1D446C</item>
 </resources>
